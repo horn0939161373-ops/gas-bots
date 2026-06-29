@@ -2160,11 +2160,15 @@ function getUserPortfolio(userId) {
  * 計算單一持倉損益
  */
 function calcPnL(costPrice, shares, currentPrice) {
-  const cost   = costPrice * shares * 1000; // 台股 1 張 = 1000 股
-  const value  = currentPrice * shares * 1000;
-  const pnl    = value - cost;
-  const pct    = cost > 0 ? (pnl / cost) * 100 : 0;
-  return { cost, value, pnl, pct };
+  const cost    = costPrice * shares * 1000; // 台股 1 張 = 1000 股
+  const value   = currentPrice * shares * 1000;
+  const buyFee  = Math.ceil(cost * 0.001425);  // 買進手續費 0.1425%
+  const sellFee = Math.ceil(value * 0.001425); // 賣出手續費 0.1425%
+  const sellTax = Math.floor(value * 0.003);   // 證交稅 0.3%（無條件捨去）
+  const fees    = buyFee + sellFee + sellTax;
+  const pnl     = value - cost - fees;
+  const pct     = cost > 0 ? (pnl / cost) * 100 : 0;
+  return { cost, value, pnl, pct, fees, buyFee, sellFee, sellTax };
 }
 
 // ─── 查詢我的投資組合（handlePostback 整合）─────────────────
