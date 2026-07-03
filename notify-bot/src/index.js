@@ -7,16 +7,19 @@ const path = require('path');
 const { scrapeListings } = require('./scrape');
 const { pushNewListings } = require('./line');
 const { loadSeenIds, saveSeenIds } = require('./state');
+const { resolveConfig } = require('./config');
 
 const CONFIG_PATH = path.join(__dirname, '..', 'config.json');
 const STATE_PATH = path.join(__dirname, '..', 'state', 'seen-listings.json');
 
 async function main() {
-  const config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
+  const rawConfig = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
+  const filter = resolveConfig(rawConfig);
   console.log('=== 591 租屋通知 ===');
-  console.log('篩選條件:', config);
+  console.log('篩選條件 (config.json):', rawConfig);
+  console.log('轉換後查詢條件:', filter);
 
-  const listings = await scrapeListings(config);
+  const listings = await scrapeListings(filter);
   console.log(`抓到 ${listings.length} 筆物件`);
 
   const seenIds = loadSeenIds(STATE_PATH);

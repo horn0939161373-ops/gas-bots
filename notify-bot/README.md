@@ -38,27 +38,38 @@ GitHub Actions（排程，預設每 30 分鐘）
 | `LINE_CHANNEL_ACCESS_TOKEN` | 上一步簽發的 Channel access token |
 | `LINE_TARGET_ID` | 你自己的 User ID 或群組 ID |
 
-## 設定篩選條件
+## 設定篩選條件（你可以隨時自己改，不需要懂程式）
 
-編輯 `config.json`（region 代碼對照見下表；也可以直接跟負責維護這個 repo 的人說想要的條件，由對方直接改）：
+到 repo 網頁上打開 `notify-bot/config.json`，點右上角鉛筆圖示編輯，改完直接在網頁上 commit 即可（手機瀏覽器也能做）。下次排程執行就會套用新條件，完全不需要碰程式碼。
 
 ```json
 {
-  "region": "1",
+  "region": "台北市",
   "priceMin": 0,
   "priceMax": 0,
-  "kind": "0",
+  "roomType": "不限",
   "keyword": "",
-  "facilities": []
+  "balcony": false,
+  "elevator": false,
+  "pet": false,
+  "airConditioner": false,
+  "cooking": false
 }
 ```
 
-- `region`：縣市代碼，見下表；`priceMin`/`priceMax`：租金區間，都填 0 代表不限
-- `kind`：房型，`0`=不限、`1`=整層住家、`2`=獨立套房、`3`=分租套房、`4`=雅房、`5`=別墅
-- `keyword`：關鍵字（例如「近捷運」），不需要填空字串
-- `facilities`：設備代碼陣列，例如 `["cold","balcony_1"]`（冷氣、陽台）
+| 欄位 | 說明 |
+|---|---|
+| `region` | 縣市名稱（例如 `"台北市"`），見下表；打錯字或查無此縣市會在 Actions log 印警告、視為不限 |
+| `priceMin` / `priceMax` | 租金區間，都填 `0` 代表不限 |
+| `roomType` | 房型：`"不限"`、`"整層住家"`、`"獨立套房"`、`"分租套房"`、`"雅房"`、`"別墅"` |
+| `keyword` | 關鍵字（例如 `"近捷運"`），不需要留空字串 `""` |
+| `balcony` | 是否要有陽台，`true`/`false` |
+| `elevator` | 是否要有電梯，`true`/`false` |
+| `pet` | 是否可養寵物，`true`/`false` |
+| `airConditioner` | 是否要有冷氣，`true`/`false` |
+| `cooking` | 是否可開伙，`true`/`false` |
 
-常用縣市代碼（已用實際 591 網址逐一核對過）：
+縣市名稱對照（已用實際 591 網址逐一核對過；也可以直接填數字代碼）：
 
 | 縣市 | 代碼 | 縣市 | 代碼 |
 |---|---|---|---|
@@ -81,6 +92,14 @@ GitHub Actions（排程，預設每 30 分鐘）
 `.github/workflows/notify-591.yml` 預設每 30 分鐘跑一次（`cron: '*/30 * * * *'`）。
 
 ⚠️ **GitHub 的排程觸發只會在預設分支（`main`）上生效**，這個 workflow 合併到 `main` 之前不會自動排程執行；也可以在 GitHub 網頁的 Actions 頁籤手動點 "Run workflow"（`workflow_dispatch`）立即測試一次。
+
+## 穩定性：591 偶爾會擋，怎麼處理的？
+
+實測發現 591 的防護會不定期把「某些」GitHub Actions 出口 IP 列入黑名單——同一支 workflow，不同次執行拿到不同 IP 時，會在「完全被擋」跟「完全正常」之間切換，不是永久封鎖整個 GitHub Actions。因應方式：
+
+1. **單次執行內重試**：`src/scrape.js` 偵測到疑似被擋（HTTP 4xx）會自動重試一次
+2. **排程本身就是最大的保險**：就算某一輪剛好抽到被封鎖的 IP，程式會安靜跳過（不會誤報、不會中斷），下一輪（30 分鐘後）換一台全新的 runner／IP，很有機會就正常了
+3. 如果連續好幾輪都抓不到資料，才需要懷疑是選取器或帳密設定的問題（見下方「除錯」）
 
 ## 費用 / Actions 分鐘數注意事項
 
