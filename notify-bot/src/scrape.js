@@ -59,12 +59,23 @@ async function extractListings(page) {
       return false;
     }
 
+    // 物件詳情頁連結的網址格式固定是「網域後面第一段路徑就是純數字 id」
+    // （例如 https://rent.591.com.tw/21493915 或相對路徑 /21493915）。
+    // 之前用「href 裡任何地方出現 /6位數以上數字」當判斷，結果連「?redirect=
+    // /21493915」這種把物件 id 包在查詢字串裡的無關連結（例如篩選欄的
+    // 「登入後查看」導回連結）也會誤判成物件連結，把不相關的小工具錨點
+    // 一起併入該物件的容器範圍。改成要求數字必須緊接在網域後面（或本身
+    // 就是相對路徑開頭），排除掉這種誤判。
+    function matchListingId(href) {
+      return href.match(/^(?:https?:\/\/[^/]+)?\/(\d{6,})(?:[/?]|$)/);
+    }
+
     const idToAnchors = new Map();
     const anchors = Array.from(document.querySelectorAll('a[href]'));
 
     for (const a of anchors) {
       const href = a.getAttribute('href') || '';
-      const m = href.match(/\/(\d{6,})(?:[/?]|$)/);
+      const m = matchListingId(href);
       if (!m) continue;
       if (isInExcludedRegion(a)) continue;
       const postId = m[1];
@@ -86,7 +97,7 @@ async function extractListings(page) {
       const as = el.querySelectorAll('a[href]');
       for (const a2 of as) {
         const href2 = a2.getAttribute('href') || '';
-        const m2 = href2.match(/\/(\d{6,})(?:[/?]|$)/);
+        const m2 = matchListingId(href2);
         if (m2 && m2[1] !== postId) return true;
       }
       return false;
@@ -137,7 +148,13 @@ async function extractListings(page) {
       // （這個問題造成過推播出來的租金是錯的）。
       const priceEl = container.querySelector('[class*="price" i]');
       const priceSource = priceEl ? priceEl.innerText : text;
-      const priceMatch = priceSource.match(/([\d,]{3,})\s*元/);
+      // 頁面上的價格「區間篩選」下拉選單也帶 price class，裡面是一整串
+      // 「不限／5000元以下／5000-10000元／...」的選項列表，而不是單一
+      // 租金數字；用「出現不只一次『元』」或「含『不限』字樣」當特徵，
+      // 排除掉誤爬到篩選選單本身的情況（實測發生過，容器排除法沒完全
+      // 擋住所有變化）。
+      const looksLikeFilterMenu = /不限/.test(priceSource) || (priceSource.match(/元/g) || []).length > 1;
+      const priceMatch = !looksLikeFilterMenu && priceSource.match(/([\d,]{3,})\s*元/);
       const price = priceMatch ? Number(priceMatch[1].replace(/,/g, '')) : 0;
 
       // 591 上不會有租金 0 元的物件；抓到 0 代表容器選錯了、不是真的卡片，
