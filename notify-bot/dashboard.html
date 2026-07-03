@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>591 租屋通知 · 抓取紀錄</title>
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: #f8fafc; color: #0f172a;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { background: #0b1220; color: #e2e8f0; }
+    .card { background: #131c2e !important; border-color: #1f2b40 !important; }
+    .meta, .addr { color: #94a3b8 !important; }
+    input, select { background: #131c2e !important; color: #e2e8f0 !important; border-color: #1f2b40 !important; }
+  }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .subtitle { color: #64748b; font-size: 13px; margin: 0 0 20px; }
+  .toolbar {
+    display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;
+  }
+  .toolbar input, .toolbar select {
+    padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px;
+  }
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;
+  }
+  .card {
+    background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .card img { width: 100%; aspect-ratio: 20/13; object-fit: cover; background: #e2e8f0; }
+  .card-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .title { font-size: 14px; font-weight: 600; line-height: 1.4; }
+  .price { font-size: 16px; font-weight: 700; color: #dc2626; }
+  .addr { font-size: 12px; color: #64748b; }
+  .meta { font-size: 12px; color: #64748b; display: flex; justify-content: space-between; margin-top: auto; }
+  .dist-badge {
+    display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px;
+    background: #d1fae5; color: #065f46; font-weight: 600;
+  }
+  .dist-badge.far { background: #fee2e2; color: #991b1b; }
+  a.link {
+    display: block; text-align: center; padding: 8px; font-size: 13px; font-weight: 600;
+    background: #0f766e; color: #fff; text-decoration: none;
+  }
+  a.link:hover { background: #0c5a54; }
+  .empty { color: #64748b; padding: 40px; text-align: center; }
+</style>
+</head>
+<body>
+  <h1>591 租屋通知 · 抓取紀錄</h1>
+  <p class="subtitle">最後更新：2026-07-03T17:30:12.640Z　共 12 筆物件　距離基準點：國立中山大學</p>
+
+  <div class="toolbar">
+    <input type="search" id="q" placeholder="搜尋標題或地址...">
+    <select id="sortBy">
+      <option value="scrapedAt">依抓取時間排序（新到舊）</option>
+      <option value="price">依租金排序（低到高）</option>
+      <option value="distanceKm">依距離排序（近到遠）</option>
+    </select>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" style="display:none">沒有符合條件的物件</div>
+
+  <script>
+    const DATA = [{"id":"21569081","title":"瑞豐夜市旁｜美二房｜附傢俱電","price":18000,"cover":"https://img2.591.com.tw/house/2017/09/14/150537315847282506.jpg!510x400.jpg","url":"https://rent.591.com.tw/21569081","scrapedAt":"2026-07-03T16:59:08.469Z"},{"id":"21568163","title":"「仲介勿擾」「新都心」出租，2房1廳1衛","price":20000,"cover":"https://img1.591.com.tw/house/2026/06/23/178216691891323703.jpg!510x400.jpg","url":"https://rent.591.com.tw/21568163","scrapedAt":"2026-07-03T16:59:08.469Z"},{"id":"21557937","title":"4房｜美術館｜鼓山區農16｜大空間｜輕軌","price":25000,"cover":"https://img1.591.com.tw/house/2026/07/01/178291313210481701.jpg!510x400.jpg","url":"https://rent.591.com.tw/21557937","scrapedAt":"2026-07-03T16:59:08.469Z"},{"id":"21550555","title":"農16富邦BOT凹仔底三房全新百萬裝房","price":32000,"cover":"https://img1.591.com.tw/house/2026/07/01/178289572357806701.jpg!510x400.jpg","url":"https://rent.591.com.tw/21550555","scrapedAt":"2026-07-03T16:59:08.469Z"},{"id":"21493915","title":"農16巨蛋捷運+精美三房","price":26000,"cover":"https://img1.591.com.tw/house/2019/04/03/155428004382009407.jpg!510x400.jpg","url":"https://rent.591.com.tw/21493915","scrapedAt":"2026-07-03T16:59:08.469Z"},{"id":"21476035","title":"可租屋補助美術館三加一房家具家電齊附平車","price":43000,"cover":"https://img1.591.com.tw/house/2020/02/11/158139726337980261.jpg!510x400.jpg","url":"https://rent.591.com.tw/21476035","scrapedAt":"2026-07-03T16:59:08.469Z"},{"id":"21451974","title":"全新未入住，每房皆有整套家具及分離式冷氣、家電齊全，溫馨居家","price":29000,"cover":"https://img1.591.com.tw/house/2026/06/14/178140694144065904.jpg!510x400.jpg","url":"https://rent.591.com.tw/21451974","scrapedAt":"2026-07-03T16:59:08.469Z"},{"id":"21371855","title":"✨美術館馬爾地夫✨高樓2+1房附家具電優選好屋","price":20000,"cover":"https://img1.591.com.tw/video/cover/2026-05-10/3076433.png!1000x.water2.png","url":"https://rent.591.com.tw/21371855","scrapedAt":"2026-07-03T16:59:08.469Z"},{"id":"21115943","title":"🍊美術館愛河旁美式透天","price":75000,"cover":"https://img.youtube.com/vi/yuW1DFs3EC8/hqdefault.jpg","url":"https://rent.591.com.tw/21115943","scrapedAt":"2026-07-03T16:59:08.469Z"},{"id":"5935832","title":"✨美術館馬爾地夫✨高樓2+1房附家具電優選好屋","price":20000,"cover":"//s.591.com.tw/house/list-loading.j0hF--0D.gif","url":"https://rent.591.com.tw/5935832","scrapedAt":"2026-07-03T16:42:03.746Z"},{"id":"3677248","title":"✨美術館馬爾地夫✨高樓2+1房附家具電優選好屋","price":20000,"cover":"//s.591.com.tw/house/list-loading.j0hF--0D.gif","url":"https://rent.591.com.tw/3677248","scrapedAt":"2026-07-03T16:42:03.746Z"},{"id":"101517","title":"✨美術館馬爾地夫✨高樓2+1房附家具電優選好屋","price":20000,"cover":"//s.591.com.tw/house/list-loading.j0hF--0D.gif","url":"https://rent.591.com.tw/101517","scrapedAt":"2026-07-03T16:42:03.746Z"}];
+
+    function render() {
+      const q = document.getElementById('q').value.trim().toLowerCase();
+      const sortBy = document.getElementById('sortBy').value;
+
+      let items = DATA.filter(it =>
+        !q || (it.title || '').toLowerCase().includes(q) || (it.address || '').toLowerCase().includes(q)
+      );
+
+      if (sortBy === 'price') {
+        items = items.slice().sort((a, b) => (a.price || 0) - (b.price || 0));
+      } else if (sortBy === 'distanceKm') {
+        items = items.slice().sort((a, b) => {
+          if (a.distanceKm == null) return 1;
+          if (b.distanceKm == null) return -1;
+          return a.distanceKm - b.distanceKm;
+        });
+      }
+
+      const grid = document.getElementById('grid');
+      const empty = document.getElementById('empty');
+      grid.innerHTML = '';
+      empty.style.display = items.length ? 'none' : 'block';
+
+      for (const it of items) {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        const img = document.createElement('img');
+        img.src = it.cover || 'https://placehold.co/600x400/94a3b8/FFFFFF?text=No+Image';
+        img.loading = 'lazy';
+        card.appendChild(img);
+
+        const body = document.createElement('div');
+        body.className = 'card-body';
+
+        const title = document.createElement('div');
+        title.className = 'title';
+        title.textContent = it.title || '未命名物件';
+        body.appendChild(title);
+
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.textContent = '$' + (it.price || 0).toLocaleString();
+        body.appendChild(price);
+
+        if (it.address) {
+          const addr = document.createElement('div');
+          addr.className = 'addr';
+          addr.textContent = it.address;
+          body.appendChild(addr);
+        }
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const time = document.createElement('span');
+        time.textContent = it.scrapedAt ? new Date(it.scrapedAt).toLocaleString('zh-TW') : '';
+        meta.appendChild(time);
+        if (typeof it.distanceKm === 'number') {
+          const badge = document.createElement('span');
+          badge.className = 'dist-badge' + (it.distanceKm > 3 ? ' far' : '');
+          badge.textContent = it.distanceKm + ' km';
+          meta.appendChild(badge);
+        }
+        body.appendChild(meta);
+
+        card.appendChild(body);
+
+        const link = document.createElement('a');
+        link.className = 'link';
+        link.href = it.url || '#';
+        link.target = '_blank';
+        link.rel = 'noopener';
+        link.textContent = '查看物件詳情';
+        card.appendChild(link);
+
+        grid.appendChild(card);
+      }
+    }
+
+    document.getElementById('q').addEventListener('input', render);
+    document.getElementById('sortBy').addEventListener('change', render);
+    render();
+  </script>
+</body>
+</html>
