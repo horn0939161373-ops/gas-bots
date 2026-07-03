@@ -81,9 +81,22 @@ async function scrapeListings(filter) {
   const browser = await chromium.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
   try {
     const page = await browser.newPage({ userAgent: UA });
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(2000); // 讓頁面 JS 有時間解密並渲染列表
-    return await extractListings(page);
+    const items = await extractListings(page);
+
+    if (items.length === 0) {
+      // 除錯用：抓不到任何物件時，印出頁面狀態方便判斷是「被擋」還是「選取器沒對到」
+      console.log('--- 除錯資訊（0 筆物件） ---');
+      console.log('HTTP 狀態碼:', response ? response.status() : '(無回應物件)');
+      console.log('頁面標題:', await page.title());
+      const bodyText = await page.evaluate(() => document.body ? document.body.innerText.slice(0, 500) : '(無 body)');
+      console.log('頁面文字前 500 字:', bodyText);
+      const anchorCount = await page.evaluate(() => document.querySelectorAll('a[href]').length);
+      console.log('頁面上 <a> 標籤總數:', anchorCount);
+    }
+
+    return items;
   } finally {
     await browser.close();
   }
