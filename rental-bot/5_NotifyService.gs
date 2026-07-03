@@ -70,3 +70,23 @@ function testForceRentalCheck() {
   Logger.log("=== 🚀 強制查詢測試 ===");
   triggerRentalCheck();
 }
+
+/**
+ * 診斷用：直接測試 GAS 能否連上 591 並取得資料，不需要任何使用者訂閱資料。
+ * 在 Apps Script 編輯器選這個函式執行，看「執行紀錄」的結果即可。
+ */
+function testFetch591Raw() {
+  Logger.log("=== Step 1: 抓首頁取得 cookie/token ===");
+  const session = fetch591Session();
+  Logger.log("拿到的 cookie 長度: " + session.cookie.length);
+  Logger.log("T591_TOKEN: " + (session.token ? "(有拿到，長度 " + session.token.length + ")" : "(沒有拿到)"));
+
+  Logger.log("=== Step 2: 呼叫搜尋 API（region=1 台北市）===");
+  const listings = fetchListings591({ region: "1" }, 0);
+  Logger.log("取得物件筆數: " + listings.length);
+  if (listings.length) {
+    Logger.log("第一筆範例: " + JSON.stringify(listings[0]));
+  } else {
+    Logger.log("❌ 沒有取得任何物件，請檢查上方 Logger 輸出的錯誤訊息（在 fetchListings591 內以 Logger.log 印出的 API 回應碼與內容）。");
+  }
+}
