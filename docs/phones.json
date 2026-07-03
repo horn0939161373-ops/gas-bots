@@ -1,1 +1,1362 @@
-[]
+[
+  {
+    "id": "apple-蘋果-iphone-17e-256gb",
+    "title": "Apple 蘋果 iPhone 17e (256GB)",
+    "price": 19290,
+    "msrp": 21900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-17e-512gb",
+    "title": "Apple 蘋果 iPhone 17e (512GB)",
+    "price": 25690,
+    "msrp": 28900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-17-pro-max-256gb",
+    "title": "Apple 蘋果 iPhone 17 Pro Max (256GB)",
+    "price": 41590,
+    "msrp": 44900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-17-pro-max-512gb",
+    "title": "Apple 蘋果 iPhone 17 Pro Max (512GB)",
+    "price": 48290,
+    "msrp": 51900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-17-pro-max-1tb",
+    "title": "Apple 蘋果 iPhone 17 Pro Max (1TB)",
+    "price": 55190,
+    "msrp": 58900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-17-pro-256gb",
+    "title": "Apple 蘋果 iPhone 17 Pro (256GB)",
+    "price": 36990,
+    "msrp": 39900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-17-pro-512gb",
+    "title": "Apple 蘋果 iPhone 17 Pro (512GB)",
+    "price": 43490,
+    "msrp": 46900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-17-pro-1tb",
+    "title": "Apple 蘋果 iPhone 17 Pro (1TB)",
+    "price": 50490,
+    "msrp": 53900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-air-256gb",
+    "title": "Apple 蘋果 iPhone Air (256GB)",
+    "price": 31290,
+    "msrp": 36900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-air-512gb",
+    "title": "Apple 蘋果 iPhone Air (512GB)",
+    "price": 33990,
+    "msrp": 43900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-air-1tb",
+    "title": "Apple 蘋果 iPhone Air (1TB)",
+    "price": 39290,
+    "msrp": 50900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-17-256gb",
+    "title": "Apple 蘋果 iPhone 17 (256GB)",
+    "price": 26990,
+    "msrp": 29900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-17-512gb",
+    "title": "Apple 蘋果 iPhone 17 (512GB)",
+    "price": 33790,
+    "msrp": 36900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "honor-x6d-海湖青",
+    "title": "HONOR X6d (海湖青)",
+    "price": 7390,
+    "msrp": 9490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "honor-x6d-暗夜黑",
+    "title": "HONOR X6d (暗夜黑)",
+    "price": 7390,
+    "msrp": 9490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "honor-magic8-pro-絨黑色",
+    "title": "HONOR Magic8 Pro (絨黑色)",
+    "price": 31990,
+    "msrp": 37990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "honor-magic8-pro-旭日金",
+    "title": "HONOR Magic8 Pro (旭日金)",
+    "price": 31990,
+    "msrp": 37990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "honor-magic8-pro-天青色",
+    "title": "HONOR Magic8 Pro (天青色)",
+    "price": 31990,
+    "msrp": 37990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-16-128gb",
+    "title": "Apple 蘋果 iPhone 16 (128GB)",
+    "price": 22790,
+    "msrp": 25900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-find-x9-ultra-日出峽谷",
+    "title": "OPPO Find X9 Ultra (日出峽谷)",
+    "price": 49990,
+    "msrp": 54990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-find-x9-ultra-大地苔原",
+    "title": "OPPO Find X9 Ultra (大地苔原)",
+    "price": 49990,
+    "msrp": 54990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-find-x9s-沉穩鈦",
+    "title": "OPPO Find X9s (沉穩鈦)",
+    "price": 21990,
+    "msrp": 32990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-find-x9s-元氣橙",
+    "title": "OPPO Find X9s (元氣橙)",
+    "price": 21990,
+    "msrp": 32990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-find-n6-旭日暖橘",
+    "title": "OPPO Find N6 (旭日暖橘)",
+    "price": 59990,
+    "msrp": 68990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-find-n6-無界鈦",
+    "title": "OPPO Find N6 (無界鈦)",
+    "price": 59990,
+    "msrp": 68990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "motorola-edge-70-fusion",
+    "title": "Motorola edge 70 Fusion",
+    "price": 9490,
+    "msrp": 14990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "iqoo-z11",
+    "title": "iQOO Z11",
+    "price": 16490,
+    "msrp": 16999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "realme-16",
+    "title": "realme 16",
+    "price": 12490,
+    "msrp": 14990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-y31-256gb",
+    "title": "vivo Y31 (256GB)",
+    "price": 7290,
+    "msrp": 11990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "xiaomi-小米-17t-pro-12g-256g",
+    "title": "Xiaomi 小米 17T Pro (12G/256G)",
+    "price": 17990,
+    "msrp": 22999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "xiaomi-小米-17t-pro-12g-512g",
+    "title": "Xiaomi 小米 17T Pro (12G/512G)",
+    "price": 20490,
+    "msrp": 24999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "xiaomi-小米-17t-pro-12g-1tb",
+    "title": "Xiaomi 小米 17T Pro (12G/1TB)",
+    "price": 22990,
+    "msrp": 27999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "xiaomi-小米-17t-12g-256g",
+    "title": "Xiaomi 小米 17T (12G/256G)",
+    "price": 15990,
+    "msrp": 17999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "xiaomi-小米-17t-12g-512g",
+    "title": "Xiaomi 小米 17T (12G/512G)",
+    "price": 18490,
+    "msrp": 19999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "索尼-sony-xperia-1-viii-12g-256g",
+    "title": "索尼 SONY Xperia 1 VIII (12G/256G)",
+    "price": 40790,
+    "msrp": 44800,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "索尼-sony-xperia-1-viii-12g-512g",
+    "title": "索尼 SONY Xperia 1 VIII (12G/512G)",
+    "price": 45790,
+    "msrp": 50880,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-x300-fe-雅霧紫",
+    "title": "vivo X300 FE (雅霧紫)",
+    "price": 17490,
+    "msrp": 23990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-x300-fe-耀動白",
+    "title": "vivo X300 FE (耀動白)",
+    "price": 17490,
+    "msrp": 23990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-x300-fe-酷玩黑",
+    "title": "vivo X300 FE (酷玩黑)",
+    "price": 17490,
+    "msrp": 23990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "realme-note-80-風暴黑",
+    "title": "realme Note 80 (風暴黑)",
+    "price": 3790,
+    "msrp": 4990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "realme-note-80-冰河藍",
+    "title": "realme Note 80 (冰河藍)",
+    "price": 3790,
+    "msrp": 4990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "motorola-g57-5g-4g-128g",
+    "title": "Motorola g57 5G (4G/128G)",
+    "price": 4290,
+    "msrp": 5990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "iqoo-15r-12g-256g",
+    "title": "iQOO 15R (12G/256G)",
+    "price": 16990,
+    "msrp": 19999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-x300-ultra-16g-512g",
+    "title": "vivo X300 Ultra (16G/512G)",
+    "price": 42990,
+    "msrp": 49990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "poco-m8-256gb",
+    "title": "POCO M8 (256GB)",
+    "price": 5490,
+    "msrp": 7499,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "poco-m8-512gb",
+    "title": "POCO M8 (512GB)",
+    "price": 5990,
+    "msrp": 8499,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "poco-x8-pro-max-12-256gb",
+    "title": "POCO X8 Pro Max (12+256GB)",
+    "price": 12790,
+    "msrp": 14999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "poco-x8-pro-max-12-512gb",
+    "title": "POCO X8 Pro Max (12+512GB)",
+    "price": 13890,
+    "msrp": 15999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "poco-x8-pro-8-256gb",
+    "title": "POCO X8 Pro (8+256GB)",
+    "price": 9990,
+    "msrp": 9999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "poco-x8-pro-8-512gb",
+    "title": "POCO X8 Pro (8+512GB)",
+    "price": 10690,
+    "msrp": 10999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "poco-x8-pro-12-512gb",
+    "title": "POCO X8 Pro (12+512GB)",
+    "price": 11990,
+    "msrp": 11999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-a37-5g-128gb",
+    "title": "SAMSUNG 三星 Galaxy A37 5G (128GB)",
+    "price": 10490,
+    "msrp": 14490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-a37-5g-256gb",
+    "title": "SAMSUNG 三星 Galaxy A37 5G (256GB)",
+    "price": 11990,
+    "msrp": 15990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-a57-5g-8g-256g",
+    "title": "SAMSUNG 三星 Galaxy A57 5G (8G/256G)",
+    "price": 12990,
+    "msrp": 17990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-a57-5g-12g-256g",
+    "title": "SAMSUNG 三星 Galaxy A57 5G (12G/256G)",
+    "price": 13890,
+    "msrp": 19490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-a57-5g-12g-512g",
+    "title": "SAMSUNG 三星 Galaxy A57 5G (12G/512G)",
+    "price": 18490,
+    "msrp": 22490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-y05-4g-曜石黑",
+    "title": "vivo Y05 4G (曜石黑)",
+    "price": 3690,
+    "msrp": 4990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-y05-4g-香檳金",
+    "title": "vivo Y05 4G (香檳金)",
+    "price": 3690,
+    "msrp": 4990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-y21-5g-極夜黑",
+    "title": "vivo Y21 5G (極夜黑)",
+    "price": 5390,
+    "msrp": 8990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-y21-5g-流沙金",
+    "title": "vivo Y21 5G (流沙金)",
+    "price": 5390,
+    "msrp": 8990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "nothing-phone-4a-pro-256gb",
+    "title": "Nothing Phone (4a Pro) (256GB)",
+    "price": 16990,
+    "msrp": 17990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "nothing-phone-4a-256gb",
+    "title": "Nothing Phone (4a) (256GB)",
+    "price": 13990,
+    "msrp": 14990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "realme-16-pro",
+    "title": "realme 16 Pro",
+    "price": 14390,
+    "msrp": 16990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-v70-fe-8g-256g",
+    "title": "vivo V70 FE (8G/256G)",
+    "price": 12490,
+    "msrp": 17990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-v70-fe-12g-256g",
+    "title": "vivo V70 FE (12G/256G)",
+    "price": 13990,
+    "msrp": 19990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-v70-256gb",
+    "title": "vivo V70 (256GB)",
+    "price": 15990,
+    "msrp": 21990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-v70-512gb",
+    "title": "vivo V70 (512GB)",
+    "price": 17990,
+    "msrp": 23990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "xiaomi-小米-17-ultra-512gb",
+    "title": "Xiaomi 小米 17 Ultra (512GB)",
+    "price": 31990,
+    "msrp": 37999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "xiaomi-小米-17-ultra-1tb",
+    "title": "Xiaomi 小米 17 Ultra (1TB)",
+    "price": 34990,
+    "msrp": 41999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "xiaomi-小米-17-256gb",
+    "title": "Xiaomi 小米 17 (256GB)",
+    "price": 21990,
+    "msrp": 24999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "xiaomi-小米-17-512gb",
+    "title": "Xiaomi 小米 17 (512GB)",
+    "price": 23990,
+    "msrp": 26999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s26-256gb",
+    "title": "SAMSUNG 三星 Galaxy S26 (256GB)",
+    "price": 24490,
+    "msrp": 30900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s26-512gb",
+    "title": "SAMSUNG 三星 Galaxy S26 (512GB)",
+    "price": 28490,
+    "msrp": 36900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s26-256gb",
+    "title": "SAMSUNG 三星 Galaxy S26+ (256GB)",
+    "price": 29990,
+    "msrp": 37900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s26-512gb",
+    "title": "SAMSUNG 三星 Galaxy S26+ (512GB)",
+    "price": 33990,
+    "msrp": 43900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s26-ultra-256gb",
+    "title": "SAMSUNG 三星 Galaxy S26 Ultra (256GB)",
+    "price": 35790,
+    "msrp": 44900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s26-ultra-512gb",
+    "title": "SAMSUNG 三星 Galaxy S26 Ultra (512GB)",
+    "price": 40490,
+    "msrp": 50900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s26-ultra-1tb",
+    "title": "SAMSUNG 三星 Galaxy S26 Ultra (1TB)",
+    "price": 49490,
+    "msrp": 59900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-10a-128gb",
+    "title": "Google Pixel 10a (128GB)",
+    "price": 11990,
+    "msrp": 16490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-10a-256gb",
+    "title": "Google Pixel 10a (256GB)",
+    "price": 14990,
+    "msrp": 19990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "sharp-aquos-wish5s-8-256gb",
+    "title": "SHARP AQUOS wish5s (8+256GB)",
+    "price": 7790,
+    "msrp": 10490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-a6s-奶霜白",
+    "title": "OPPO A6s (奶霜白)",
+    "price": 5390,
+    "msrp": 7990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-a6s-可可棕",
+    "title": "OPPO A6s (可可棕)",
+    "price": 5390,
+    "msrp": 7990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "hmd-101-4g-藍色",
+    "title": "HMD 101 4G (藍色)",
+    "price": 1350,
+    "msrp": 1790,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "hmd-101-4g-黑色",
+    "title": "HMD 101 4G (黑色)",
+    "price": 1350,
+    "msrp": 1790,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "benten-奔騰-a86-4g",
+    "title": "Benten 奔騰 A86 4G",
+    "price": 2490,
+    "msrp": 2980,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-a07",
+    "title": "SAMSUNG 三星 Galaxy A07",
+    "price": 4090,
+    "msrp": 5990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "motorola-edge-70-灰色",
+    "title": "Motorola edge 70 (灰色)",
+    "price": 11290,
+    "msrp": 16990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-note-15-4g-6-128gb",
+    "title": "Redmi 紅米 Note 15 4G (6+128GB)",
+    "price": 4790,
+    "msrp": 5999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-note-15-4g-8-256gb",
+    "title": "Redmi 紅米 Note 15 4G (8+256GB)",
+    "price": 5690,
+    "msrp": 6999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-note-15-pro-5g-12-256gb",
+    "title": "Redmi 紅米 Note 15 Pro+ 5G (12+256GB)",
+    "price": 10790,
+    "msrp": 12999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-note-15-pro-5g-12-512gb",
+    "title": "Redmi 紅米 Note 15 Pro+ 5G (12+512GB)",
+    "price": 11790,
+    "msrp": 13999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-note-15-pro-5g-12-256gb",
+    "title": "Redmi 紅米 Note 15 Pro 5G (12+256GB)",
+    "price": 8790,
+    "msrp": 10999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-note-15-pro-5g-12-512gb",
+    "title": "Redmi 紅米 Note 15 Pro 5G (12+512GB)",
+    "price": 9790,
+    "msrp": 11999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-note-15-5g-6-128gb",
+    "title": "Redmi 紅米 Note 15 5G (6+128GB)",
+    "price": 5590,
+    "msrp": 8999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-note-15-5g-8-256gb",
+    "title": "Redmi 紅米 Note 15 5G (8+256GB)",
+    "price": 6590,
+    "msrp": 9999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-a6x-芋泥紫",
+    "title": "OPPO A6x (芋泥紫)",
+    "price": 5290,
+    "msrp": 8990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-a6x-莓果紫",
+    "title": "OPPO A6x (莓果紫)",
+    "price": 5290,
+    "msrp": 8990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-reno15-pro-max-5g-暮光金",
+    "title": "OPPO Reno15 Pro Max 5G (暮光金)",
+    "price": 20290,
+    "msrp": 26990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-reno15-pro-max-5g-夜漠棕",
+    "title": "OPPO Reno15 Pro Max 5G (夜漠棕)",
+    "price": 20190,
+    "msrp": 26990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-reno15-f-5g-8-256gb",
+    "title": "OPPO Reno15 F 5G (8+256GB)",
+    "price": 8690,
+    "msrp": 15990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-reno15-pro-5g-夜漠棕",
+    "title": "OPPO Reno15 Pro 5G (夜漠棕)",
+    "price": 16490,
+    "msrp": 22990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-reno15-pro-5g-極光藍",
+    "title": "OPPO Reno15 Pro 5G (極光藍)",
+    "price": 16490,
+    "msrp": 22990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-reno15-5g-256gb",
+    "title": "OPPO Reno15 5G (256GB)",
+    "price": 13190,
+    "msrp": 19990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "oppo-reno15-5g-512gb",
+    "title": "OPPO Reno15 5G (512GB)",
+    "price": 14790,
+    "msrp": 21990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-15-4g-6gb-128gb",
+    "title": "Redmi 紅米 15 4G (6GB+128GB)",
+    "price": 4590,
+    "msrp": 4999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-15-5g-4gb-128gb",
+    "title": "Redmi 紅米 15 5G (4GB+128GB)",
+    "price": 4290,
+    "msrp": 6499,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-15-5g-8gb-256gb",
+    "title": "Redmi 紅米 15 5G (8GB+256GB)",
+    "price": 5590,
+    "msrp": 7999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-15c-4gb-128gb",
+    "title": "Redmi 紅米 15C (4GB+128GB)",
+    "price": 3390,
+    "msrp": 4499,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-15c-8gb-256gb",
+    "title": "Redmi 紅米 15C (8GB+256GB)",
+    "price": 4290,
+    "msrp": 5499,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "poco-f8-ultra-12-256gb",
+    "title": "POCO F8 Ultra (12+256GB)",
+    "price": 20690,
+    "msrp": 21999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "poco-f8-ultra-16-512gb",
+    "title": "POCO F8 Ultra (16+512GB)",
+    "price": 22490,
+    "msrp": 23999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "iqoo-15-16g-512g",
+    "title": "iQOO 15 (16G/512G)",
+    "price": 26490,
+    "msrp": 29999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-x300-pro-16g-512g",
+    "title": "vivo X300 Pro (16G/512G)",
+    "price": 30990,
+    "msrp": 37990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-x300-12g-256g",
+    "title": "vivo X300 (12G/256G)",
+    "price": 19890,
+    "msrp": 30990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-x300-16g-512g",
+    "title": "vivo X300 (16G/512G)",
+    "price": 24990,
+    "msrp": 33490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-10-pro-fold-256gb",
+    "title": "Google Pixel 10 Pro Fold (256GB)",
+    "price": 42990,
+    "msrp": 56990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-10-pro-fold-512gb",
+    "title": "Google Pixel 10 Pro Fold (512GB)",
+    "price": 43990,
+    "msrp": 60990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-v60-lite-12g-256g",
+    "title": "vivo V60 Lite (12G/256G)",
+    "price": 8290,
+    "msrp": 14990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s25-fe-酷黑",
+    "title": "SAMSUNG 三星 Galaxy S25 FE (酷黑)",
+    "price": 15390,
+    "msrp": 22990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s25-fe-冰川白",
+    "title": "SAMSUNG 三星 Galaxy S25 FE (冰川白)",
+    "price": 15390,
+    "msrp": 22990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s25-fe-冰藍",
+    "title": "SAMSUNG 三星 Galaxy S25 FE (冰藍)",
+    "price": 15490,
+    "msrp": 22990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s25-fe-深海藍",
+    "title": "SAMSUNG 三星 Galaxy S25 FE (深海藍)",
+    "price": 15390,
+    "msrp": 22990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-v60-256gb",
+    "title": "vivo V60 (256GB)",
+    "price": 10790,
+    "msrp": 17990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-v60-512gb",
+    "title": "vivo V60 (512GB)",
+    "price": 12290,
+    "msrp": 19990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-10-pro-xl",
+    "title": "Google Pixel 10 Pro XL",
+    "price": 29990,
+    "msrp": 39990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-10-pro-128gb",
+    "title": "Google Pixel 10 Pro (128GB)",
+    "price": 23490,
+    "msrp": 33490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-10-pro-256gb",
+    "title": "Google Pixel 10 Pro (256GB)",
+    "price": 27990,
+    "msrp": 36990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-10-pro-512gb",
+    "title": "Google Pixel 10 Pro (512GB)",
+    "price": 31990,
+    "msrp": 40990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-10-128gb",
+    "title": "Google Pixel 10 (128GB)",
+    "price": 16490,
+    "msrp": 26490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-10-256gb",
+    "title": "Google Pixel 10 (256GB)",
+    "price": 21990,
+    "msrp": 29990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-a17-5g",
+    "title": "SAMSUNG 三星 Galaxy A17 5G",
+    "price": 4790,
+    "msrp": 7490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-x-fold-5",
+    "title": "vivo X Fold 5",
+    "price": 38990,
+    "msrp": 52990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "motorola-edge-60-fusion",
+    "title": "Motorola edge 60 Fusion",
+    "price": 8490,
+    "msrp": 12990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-z-fold7-256gb-墨夜黑",
+    "title": "SAMSUNG 三星 Galaxy Z Fold7 (256GB&墨夜黑)",
+    "price": 43990,
+    "msrp": 62900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "sharp-aquos-r10-256gb",
+    "title": "SHARP AQUOS R10 (256GB)",
+    "price": 13990,
+    "msrp": 20990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "sharp-aquos-r10-512gb",
+    "title": "SHARP AQUOS R10 (512GB)",
+    "price": 16990,
+    "msrp": 22990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "g-plus-a6-資安機-黑色",
+    "title": "G-Plus A6 資安機 (黑色)",
+    "price": 10280,
+    "msrp": 10280,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "motorola-g56-5g-灰色",
+    "title": "Motorola g56 5G (灰色)",
+    "price": 4490,
+    "msrp": 7990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s25-edge-256gb",
+    "title": "SAMSUNG 三星 Galaxy S25 Edge (256GB)",
+    "price": 23490,
+    "msrp": 37900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s25-edge-512gb",
+    "title": "SAMSUNG 三星 Galaxy S25 Edge (512GB)",
+    "price": 24490,
+    "msrp": 41900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "vivo-y29s-128gb",
+    "title": "vivo Y29s (128GB)",
+    "price": 3690,
+    "msrp": 7990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-9a-128gb",
+    "title": "Google Pixel 9a (128GB)",
+    "price": 10490,
+    "msrp": 16490,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-9a-256gb",
+    "title": "Google Pixel 9a (256GB)",
+    "price": 12990,
+    "msrp": 19990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-a26-5g-深潛黑",
+    "title": "SAMSUNG 三星 Galaxy A26 5G (深潛黑)",
+    "price": 6890,
+    "msrp": 11990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-a26-5g-度假綠",
+    "title": "SAMSUNG 三星 Galaxy A26 5G (度假綠)",
+    "price": 6990,
+    "msrp": 11990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-a56-5g-8g-256g",
+    "title": "SAMSUNG 三星 Galaxy A56 5G (8G/256G)",
+    "price": 9990,
+    "msrp": 16990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-16e-512gb",
+    "title": "Apple 蘋果 iPhone 16e (512GB)",
+    "price": 20990,
+    "msrp": 32400,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s25-ultra-256gb",
+    "title": "SAMSUNG 三星 Galaxy S25 Ultra (256GB)",
+    "price": 27790,
+    "msrp": 43900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s25-ultra-512gb",
+    "title": "SAMSUNG 三星 Galaxy S25 Ultra (512GB)",
+    "price": 32790,
+    "msrp": 47900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s25-256gb",
+    "title": "SAMSUNG 三星 Galaxy S25+ (256GB)",
+    "price": 22490,
+    "msrp": 34900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s25-256gb",
+    "title": "SAMSUNG 三星 Galaxy S25 (256GB)",
+    "price": 18390,
+    "msrp": 27900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "samsung-三星-galaxy-s25-512gb",
+    "title": "SAMSUNG 三星 Galaxy S25 (512GB)",
+    "price": 22390,
+    "msrp": 31900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-note-14-pro-5g-256gb-午夜黑",
+    "title": "Redmi 紅米 Note 14 Pro+ 5G (256GB&午夜黑)",
+    "price": 8690,
+    "msrp": 11999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "benten-奔騰-f72-4g",
+    "title": "Benten 奔騰 F72 4G",
+    "price": 1690,
+    "msrp": 2990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "motorola-g85-5g-橄欖綠",
+    "title": "Motorola g85 5G (橄欖綠)",
+    "price": 4490,
+    "msrp": 8990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "poco-c75",
+    "title": "POCO C75",
+    "price": 3190,
+    "msrp": 3999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-9-pro-fold-256gb",
+    "title": "Google Pixel 9 Pro Fold (256GB)",
+    "price": 31990,
+    "msrp": 56990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "google-pixel-9-pro-fold-512gb",
+    "title": "Google Pixel 9 Pro Fold (512GB)",
+    "price": 33990,
+    "msrp": 60990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "redmi-紅米-13c-5g",
+    "title": "Redmi 紅米 13C 5G",
+    "price": 3190,
+    "msrp": 5999,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "motorola-edge-50-pro-12g-256g",
+    "title": "Motorola edge 50 Pro (12G+256G)",
+    "price": 9490,
+    "msrp": 16990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "htc-u24-pro-12g-256g",
+    "title": "HTC U24 Pro (12G+256G)",
+    "price": 9890,
+    "msrp": 18990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "htc-u24-pro-12g-512g",
+    "title": "HTC U24 Pro (12G+512G)",
+    "price": 10990,
+    "msrp": 20990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "nokia-215-4g-2024版-黑色",
+    "title": "Nokia 215 4G 2024版 (黑色)",
+    "price": 1590,
+    "msrp": 1990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "mtos-c13",
+    "title": "mtos C13",
+    "price": 1490,
+    "msrp": 1880,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "hugiga-鴻碁-a38",
+    "title": "HUGIGA 鴻碁 A38",
+    "price": 1690,
+    "msrp": 2990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "inhon-f28",
+    "title": "INHON F28",
+    "price": 1790,
+    "msrp": 3280,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "benten-f60",
+    "title": "Benten F60+",
+    "price": 1650,
+    "msrp": 2990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "nokia-2660-flip-黑色",
+    "title": "Nokia 2660 Flip (黑色)",
+    "price": 2290,
+    "msrp": 2990,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  },
+  {
+    "id": "apple-蘋果-iphone-15-128gb",
+    "title": "Apple 蘋果 iPhone 15 (128GB)",
+    "price": 17690,
+    "msrp": 25900,
+    "cover": "",
+    "url": "https://www.miko3c.com/price/phone/"
+  }
+]
