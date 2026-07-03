@@ -1,10 +1,10 @@
 {
-  "region": "台北市",
+  "region": "高雄市",
   "priceMin": 0,
   "priceMax": 0,
   "roomType": "不限",
   "keyword": "",
-  "balcony": false,
+  "balcony": true,
   "elevator": false,
   "pet": false,
   "airConditioner": false,
