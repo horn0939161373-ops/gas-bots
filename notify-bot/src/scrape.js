@@ -28,13 +28,20 @@ function buildListUrl(filter) {
  * 從渲染完成的搜尋結果頁 DOM 擷取物件資料。用「連到物件詳情頁的連結」
  * 當錨點去找資料，而不是依賴特定 CSS class（class 名稱較容易隨改版
  * 變動，連結網址格式相對穩定）。
- * ⚠️ 這是依現有頁面結構的最佳猜測，第一次真的跑過後應該用
- * workflow_dispatch 手動觸發、對照 Actions log 微調。
+ *
+ * 591 同一筆物件在卡片裡常常有「不只一個」連到詳情頁的 <a>（例如縮圖
+ * 一個、標題文字又一個，分屬不同的子區塊），單純從其中一個 <a> 往上爬
+ * 幾層找容器，容易只爬到「標題」這種小區塊就因為文字夠長而提早停止，
+ * 抓不到跟它同層、放價格跟圖片的其他區塊（實測發現這是大部分物件推播
+ * 出來標題正確、但價格 $0、沒有圖片的根本原因）。
+ * 改成：先收集同一個物件 id 的「所有」連結，取它們的最近共同祖先當
+ * 容器起點，再視需要往上爬，直到容器內同時找得到價格跟圖片為止，且
+ * 途中一旦發現爬過頭、容器已經包含別筆物件的連結，就停止（避免把兩筆
+ * 物件的資料混在一起）。
  */
 async function extractListings(page) {
   return page.evaluate(() => {
-    const seen = new Set();
-    const results = [];
+    const idToAnchors = new Map();
     const anchors = Array.from(document.querySelectorAll('a[href]'));
 
     for (const a of anchors) {
@@ -42,15 +49,66 @@ async function extractListings(page) {
       const m = href.match(/\/(\d{6,})(?:[/?]|$)/);
       if (!m) continue;
       const postId = m[1];
-      if (seen.has(postId)) continue;
+      if (!idToAnchors.has(postId)) idToAnchors.set(postId, []);
+      idToAnchors.get(postId).push(a);
+    }
 
-      let container = a.closest('li') || a.closest('article') || a.parentElement;
+    function commonAncestor(nodes) {
+      let ancestor = nodes[0];
+      for (let i = 1; i < nodes.length; i++) {
+        while (ancestor && !ancestor.contains(nodes[i])) {
+          ancestor = ancestor.parentElement;
+        }
+      }
+      return ancestor;
+    }
+
+    function containsOtherListing(el, postId) {
+      const as = el.querySelectorAll('a[href]');
+      for (const a2 of as) {
+        const href2 = a2.getAttribute('href') || '';
+        const m2 = href2.match(/\/(\d{6,})(?:[/?]|$)/);
+        if (m2 && m2[1] !== postId) return true;
+      }
+      return false;
+    }
+
+    // 圖片網址擷取：591 用懶載入，src 常常是 data: URI 佔位圖，真正的網址
+    // 在 data-src 等屬性；佔位圖雖然是非空字串，但不能當成「已經抓到」。
+    function pickImageUrl(img) {
+      if (!img) return '';
+      const candidates = [
+        img.getAttribute('src'),
+        img.getAttribute('data-src'),
+        img.getAttribute('data-original'),
+        img.getAttribute('data-lazy-src')
+      ];
+      for (const c of candidates) {
+        if (c && !c.startsWith('data:')) return c;
+      }
+      const srcset = img.getAttribute('srcset') || img.getAttribute('data-srcset');
+      if (srcset) {
+        const first = srcset.split(',')[0].trim().split(' ')[0];
+        if (first && !first.startsWith('data:')) return first;
+      }
+      return '';
+    }
+
+    const results = [];
+    for (const [postId, anchorList] of idToAnchors) {
+      let container = commonAncestor(anchorList);
+      if (!container) continue;
+
       let hops = 0;
-      while (container && container.innerText.trim().length < 20 && hops < 4) {
-        container = container.parentElement;
+      while (hops < 6) {
+        const hasPrice = !!container.querySelector('[class*="price" i]');
+        const hasImg = !!container.querySelector('img');
+        if (hasPrice && hasImg) break;
+        const parent = container.parentElement;
+        if (!parent || containsOtherListing(parent, postId)) break;
+        container = parent;
         hops++;
       }
-      if (!container) continue;
 
       const text = container.innerText.replace(/\s+/g, ' ').trim();
       if (!text) continue;
@@ -63,30 +121,12 @@ async function extractListings(page) {
       const priceMatch = priceSource.match(/([\d,]{3,})\s*元/);
       const price = priceMatch ? Number(priceMatch[1].replace(/,/g, '')) : 0;
 
-      // 圖片：591 用懶載入，src 常常是佔位圖，真正的網址可能在其他屬性
       const img = container.querySelector('img');
-      let cover = '';
-      const debugImgAttrs = img ? {
-        src: img.getAttribute('src'),
-        dataSrc: img.getAttribute('data-src'),
-        dataOriginal: img.getAttribute('data-original'),
-        dataLazySrc: img.getAttribute('data-lazy-src'),
-        srcset: img.getAttribute('srcset')
-      } : null;
-      if (img) {
-        cover = img.getAttribute('src') || img.getAttribute('data-src') ||
-                img.getAttribute('data-original') || img.getAttribute('data-lazy-src') || '';
-        if (!cover || cover.startsWith('data:')) {
-          const srcset = img.getAttribute('srcset') || img.getAttribute('data-srcset');
-          if (srcset) cover = srcset.split(',')[0].trim().split(' ')[0];
-        }
-        if (cover && cover.startsWith('data:')) cover = ''; // 懶載入佔位圖，視為沒抓到
-      }
+      const cover = pickImageUrl(img);
 
       const titleEl = container.querySelector('h3, h4, [class*="title"]');
       const title = (titleEl ? titleEl.innerText : text.slice(0, 30)).trim();
 
-      seen.add(postId);
       results.push({
         id: postId,
         title,
@@ -95,7 +135,13 @@ async function extractListings(page) {
         url: 'https://rent.591.com.tw/' + postId,
         _debugPriceSource: priceSource.slice(0, 150),
         _debugHasPriceEl: !!priceEl,
-        _debugImgAttrs: debugImgAttrs,
+        _debugImgAttrs: img ? {
+          src: img.getAttribute('src'),
+          dataSrc: img.getAttribute('data-src'),
+          dataOriginal: img.getAttribute('data-original'),
+          dataLazySrc: img.getAttribute('data-lazy-src'),
+          srcset: img.getAttribute('srcset')
+        } : null,
         _debugContainerClass: (container.className && typeof container.className === 'string') ? container.className.slice(0, 150) : String(container.getAttribute && container.getAttribute('class') || ''),
         _debugContainerHtml: container.outerHTML.slice(0, 400)
       });
