@@ -1,0 +1,12 @@
+{
+  "region": "台北市",
+  "priceMin": 0,
+  "priceMax": 0,
+  "roomType": "不限",
+  "keyword": "",
+  "balcony": false,
+  "elevator": false,
+  "pet": false,
+  "airConditioner": false,
+  "cooking": false
+}
