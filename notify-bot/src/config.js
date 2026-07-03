@@ -14,6 +14,33 @@ const ROOM_TYPE_MAP = {
   '不限': '0', '整層住家': '1', '獨立套房': '2', '分租套房': '3', '雅房': '4', '別墅': '5'
 };
 
+// 縣市內行政區代碼（591 的 section 參數），已用實際 591 網址逐一核對過。
+// 目前只先建了高雄市（因應中山大學附近的搜尋需求），其他縣市的行政區
+// 需要時用同樣方式（到 591 網站選好行政區，從網址列的 section= 參數
+// 取得代碼）再補進來；也可以直接在 config.json 的 district 欄位填數字代碼。
+const SECTION_MAP = {
+  '17': { // 高雄市
+    '新興區': 243, '苓雅區': 245, '鼓山區': 247, '前鎮區': 249,
+    '三民區': 250, '楠梓區': 251, '左營區': 253, '鳳山區': 268
+  }
+};
+
+function resolveDistrict(regionCode, name) {
+  if (!name) return '';
+  const trimmed = String(name).trim();
+  if (/^\d+$/.test(trimmed)) return trimmed; // 允許直接填數字代碼
+  const districts = SECTION_MAP[regionCode];
+  if (!districts) {
+    console.log(`⚠️ 目前還沒有這個縣市（region=${regionCode}）的行政區代碼表，「${name}」將被忽略，只用縣市層級搜尋。`);
+    return '';
+  }
+  if (districts[trimmed] != null) return String(districts[trimmed]);
+  const key = Object.keys(districts).find(k => trimmed.includes(k));
+  if (key) return String(districts[key]);
+  console.log(`⚠️ 無法辨識行政區「${name}」，請對照 notify-bot/README.md 的行政區代碼表。`);
+  return '';
+}
+
 // 設備 boolean 欄位 → 591 option 參數代碼
 const FACILITY_FIELD_MAP = {
   balcony: 'balcony_1',
@@ -49,8 +76,11 @@ function resolveConfig(config) {
     .filter(field => config[field] === true)
     .map(field => FACILITY_FIELD_MAP[field]);
 
+  const region = resolveRegion(config.region);
+
   return {
-    region: resolveRegion(config.region),
+    region,
+    section: resolveDistrict(region, config.district),
     priceMin: Number(config.priceMin) || 0,
     priceMax: Number(config.priceMax) || 0,
     kind: resolveRoomType(config.roomType),
@@ -59,4 +89,4 @@ function resolveConfig(config) {
   };
 }
 
-module.exports = { resolveConfig, REGION_MAP, ROOM_TYPE_MAP, FACILITY_FIELD_MAP };
+module.exports = { resolveConfig, REGION_MAP, ROOM_TYPE_MAP, FACILITY_FIELD_MAP, SECTION_MAP };

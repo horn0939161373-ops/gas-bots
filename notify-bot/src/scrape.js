@@ -14,6 +14,7 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
 function buildListUrl(filter) {
   const params = new URLSearchParams();
   if (filter.region) params.set('region', String(filter.region));
+  if (filter.section) params.set('section', String(filter.section));
   if (filter.kind && filter.kind !== '0') params.set('kind', String(filter.kind));
   if (filter.priceMin || filter.priceMax) {
     params.set('rentprice', `${filter.priceMin || 0}_${filter.priceMax || 999999}`);
