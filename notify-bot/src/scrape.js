@@ -95,7 +95,9 @@ async function extractListings(page) {
         url: 'https://rent.591.com.tw/' + postId,
         _debugPriceSource: priceSource.slice(0, 150),
         _debugHasPriceEl: !!priceEl,
-        _debugImgAttrs: debugImgAttrs
+        _debugImgAttrs: debugImgAttrs,
+        _debugContainerClass: (container.className && typeof container.className === 'string') ? container.className.slice(0, 150) : String(container.getAttribute && container.getAttribute('class') || ''),
+        _debugContainerHtml: container.outerHTML.slice(0, 400)
       });
     }
     return results;
@@ -145,6 +147,26 @@ async function _fetchOnce(url) {
           debugHasPriceEl: it._debugHasPriceEl,
           debugImgAttrs: it._debugImgAttrs
         }));
+      }
+
+      const problemItems = items.filter(it => it.price === 0 || !it.cover);
+      if (problemItems.length > 0) {
+        console.log(`--- 除錯資訊（價格=0 或無圖片的物件，共 ${problemItems.length} 筆，只印前 5 筆） ---`);
+        for (const it of problemItems.slice(0, 5)) {
+          console.log(JSON.stringify({
+            id: it.id,
+            title: it.title.slice(0, 20),
+            price: it.price,
+            cover: it.cover,
+            debugPriceSource: it._debugPriceSource,
+            debugHasPriceEl: it._debugHasPriceEl,
+            debugImgAttrs: it._debugImgAttrs,
+            debugContainerClass: it._debugContainerClass,
+            debugContainerHtml: it._debugContainerHtml
+          }));
+        }
+      } else {
+        console.log('--- 除錯資訊：這批物件全部都有正確價格與圖片 ---');
       }
     }
 
