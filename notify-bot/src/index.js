@@ -43,16 +43,21 @@ async function main() {
   const seenSet = new Set(seenIds);
   let fresh = listings.filter(l => !seenSet.has(l.id));
 
+  // 一定要把快取檔寫回磁碟（就算這次沒有新物件、沒有查地理編碼），確保
+  // 這個檔案一定存在，讓 workflow 最後的 git add 不會因為檔案還沒建立
+  // 過而失敗（實測第一次執行就發生過這個問題：0 筆新物件時完全不會走
+  // 到距離篩選的程式碼，state/geocode-cache.json 從頭到尾沒被建立過，
+  // git add 對不存在的路徑會直接報錯讓整個 commit 步驟失敗）。
+  const geocodeCache = loadGeocodeCache();
+
   // 距離篩選：只對「新物件」查地理編碼（已經看過的物件不用重查），太遠
   // 的直接排除不推播。地址查不到座標、或本來就沒開啟這個功能時，維持
   // 原本的行為照樣推播，不會因為地理編碼服務一時查不到就漏掉真正的新
   // 物件。
   if (fresh.length && filter.distanceFilter.enabled) {
     console.log(`距離篩選啟用中，查詢跟「${filter.distanceFilter.landmarkName}」的距離（上限 ${filter.distanceFilter.maxDistanceKm} 公里）...`);
-    const geocodeCache = loadGeocodeCache();
     const landmark = { lat: filter.distanceFilter.landmarkLat, lon: filter.distanceFilter.landmarkLng };
     const distanceById = await geocodeAndMeasure(fresh, landmark, geocodeCache);
-    saveGeocodeCache(geocodeCache);
 
     for (const item of fresh) {
       const result = distanceById.get(item.id);
@@ -65,6 +70,8 @@ async function main() {
     }
     fresh = fresh.filter(item => !(item.distanceKm != null && item.distanceKm > filter.distanceFilter.maxDistanceKm));
   }
+
+  saveGeocodeCache(geocodeCache);
 
   // 把這次抓到的完整資料（標題/價格/圖片/連結/地址/距離）保留下來，不是
   // 只記 id，之後想回顧「之前到底抓到了什麼」才查得到，後台視覺化頁面
