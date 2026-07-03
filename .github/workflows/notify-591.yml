@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: '*/30 * * * *'
   workflow_dispatch: {}
+  push:
+    branches:
+      - claude/code-review-seqyto
+    paths:
+      - '.github/workflows/notify-591.yml'
 
 permissions:
   contents: write
