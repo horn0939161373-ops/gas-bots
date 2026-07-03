@@ -49,6 +49,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add notify-bot/state/seen-listings.json
+          git add notify-bot/state/seen-listings.json notify-bot/state/listings-data.json
           git diff --cached --quiet || git commit -m "chore: 更新已推播物件紀錄 [skip ci]"
           git push

@@ -5,6 +5,7 @@
   "priceMax": 0,
   "roomType": "不限",
   "keyword": "中山大學",
+  "maxResults": 10,
   "balcony": true,
   "elevator": false,
   "pet": false,

@@ -21,6 +21,10 @@ function buildListUrl(filter) {
   }
   if (filter.keyword) params.set('keyword', filter.keyword);
   if (filter.facilities && filter.facilities.length) params.set('option', filter.facilities.join(','));
+  // 依刊登時間新到舊排序，這樣才能直接取「最新 N 筆」，不用每次把整批
+  // 搜尋結果都掃過一輪。
+  params.set('order', 'posttime');
+  params.set('orderType', 'desc');
   return `https://rent.591.com.tw/list?${params.toString()}`;
 }
 
@@ -224,6 +228,33 @@ async function _fetchOnce(url) {
     const statusCode = response ? response.status() : 0;
 
     if (items.length > 0) {
+      // 除錯用：研究能不能做「距離篩選」，先看頁面上有沒有現成的地址/
+      // 經緯度資料可以用（例如 Vue SSR 常見的全域初始狀態物件），這樣才
+      // 不用另外呼叫地理編碼 API 或多開一堆物件詳情頁。
+      const geoDebug = await page.evaluate(() => {
+        const globalKeys = Object.keys(window).filter(k => /state|nuxt|initial|__NEXT|preload/i.test(k));
+        const anchors = document.querySelectorAll('a[href]');
+        let firstContainer = null;
+        for (const a of anchors) {
+          const href = a.getAttribute('href') || '';
+          if (/^(?:https?:\/\/[^/]+)?\/(\d{6,})(?:[/?]|$)/.test(href)) {
+            firstContainer = a.closest('li') || a.closest('article') || a.parentElement;
+            break;
+          }
+        }
+        const dataAttrs = firstContainer
+          ? Array.from(firstContainer.querySelectorAll('*')).slice(0, 50).flatMap(el =>
+              Array.from(el.attributes || [])
+                .filter(attr => /lat|lng|lon|geo|address|addr/i.test(attr.name))
+                .map(attr => `${attr.name}=${attr.value}`)
+            )
+          : [];
+        const firstCardText = firstContainer ? firstContainer.innerText.slice(0, 300) : '';
+        return { globalKeys, dataAttrs, firstCardText };
+      });
+      console.log('--- 除錯資訊（研究距離篩選可行性：全域變數/地址屬性/卡片全文） ---');
+      console.log(JSON.stringify(geoDebug));
+
       console.log('--- 除錯資訊（全部物件的 id/price/cover 簡表） ---');
       console.log(JSON.stringify(items.map(it => ({ id: it.id, price: it.price, cover: it.cover ? 'ok' : 'empty' }))));
 
@@ -284,12 +315,15 @@ function _sleep(ms) {
 
 async function scrapeListings(filter) {
   const url = buildListUrl(filter);
+  const maxResults = filter.maxResults > 0 ? filter.maxResults : 10;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const { items, statusCode } = await _fetchOnce(url);
     const blocked = statusCode >= 400;
 
-    if (!blocked || items.length > 0) return items;
+    // 搜尋網址已加上「依刊登時間新到舊排序」，DOM 上物件出現的順序就是
+    // 新到舊，取前 N 筆即為「最新 N 筆」，不用每次處理整批搜尋結果。
+    if (!blocked || items.length > 0) return items.slice(0, maxResults);
 
     if (attempt < MAX_ATTEMPTS) {
       console.log(`⚠️ 第 ${attempt} 次疑似被擋（狀態碼 ${statusCode}），${RETRY_DELAY_MS / 1000} 秒後重試...`);

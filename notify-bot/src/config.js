@@ -85,7 +85,8 @@ function resolveConfig(config) {
     priceMax: Number(config.priceMax) || 0,
     kind: resolveRoomType(config.roomType),
     keyword: config.keyword || '',
-    facilities
+    facilities,
+    maxResults: Number(config.maxResults) > 0 ? Number(config.maxResults) : 10
   };
 }
 

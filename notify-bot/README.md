@@ -17,7 +17,7 @@ GitHub Actions（排程，預設每 30 分鐘）
   → 把新增的物件 id 寫回 state/seen-listings.json 並 commit
 ```
 
-沒有資料庫、沒有伺服器——已推播紀錄直接存成 repo 裡的 JSON 檔，每次執行完自動 commit。
+沒有資料庫、沒有伺服器——已推播紀錄直接存成 repo 裡的 JSON 檔，每次執行完自動 commit。除了 `state/seen-listings.json`（只記已推播過的物件 id，用來判斷新舊），每次抓到的完整物件資料（標題/價格/圖片/連結）也會保留在 `state/listings-data.json`，方便之後回顧「之前到底抓到了什麼」，不是只有一串 id。
 
 ## 你需要做的事（僅這兩步，跟身份綁定、無法代勞）
 
@@ -65,6 +65,7 @@ GitHub Actions（排程，預設每 30 分鐘）
 | `priceMin` / `priceMax` | 租金區間，都填 `0` 代表不限 |
 | `roomType` | 房型：`"不限"`、`"整層住家"`、`"獨立套房"`、`"分租套房"`、`"雅房"`、`"別墅"` |
 | `keyword` | 關鍵字（例如 `"近捷運"`），不需要留空字串 `""` |
+| `maxResults` | 每次只處理「最新 N 筆」刊登物件（依刊登時間排序），預設 `10` |
 | `balcony` | 是否要有陽台，`true`/`false` |
 | `elevator` | 是否要有電梯，`true`/`false` |
 | `pet` | 是否可養寵物，`true`/`false` |

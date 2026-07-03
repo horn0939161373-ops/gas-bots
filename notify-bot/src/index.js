@@ -6,11 +6,12 @@ const fs = require('fs');
 const path = require('path');
 const { scrapeListings } = require('./scrape');
 const { pushNewListings } = require('./line');
-const { loadSeenIds, saveSeenIds } = require('./state');
+const { loadSeenIds, saveSeenIds, loadListingsData, saveListingsData } = require('./state');
 const { resolveConfig } = require('./config');
 
 const CONFIG_PATH = path.join(__dirname, '..', 'config.json');
 const STATE_PATH = path.join(__dirname, '..', 'state', 'seen-listings.json');
+const LISTINGS_DATA_PATH = path.join(__dirname, '..', 'state', 'listings-data.json');
 
 async function main() {
   const rawConfig = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
@@ -21,6 +22,11 @@ async function main() {
 
   const listings = await scrapeListings(filter);
   console.log(`抓到 ${listings.length} 筆物件`);
+
+  // 把這次抓到的完整資料（標題/價格/圖片/連結）保留下來，不是只記 id，
+  // 之後想回顧「之前到底抓到了什麼」才查得到。
+  const existingData = loadListingsData(LISTINGS_DATA_PATH);
+  saveListingsData(LISTINGS_DATA_PATH, listings, existingData);
 
   const seenIds = loadSeenIds(STATE_PATH);
   const seenSet = new Set(seenIds);
