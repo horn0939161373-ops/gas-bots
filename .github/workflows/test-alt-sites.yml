@@ -2,6 +2,11 @@ name: Test Alternative Rental Sites Connectivity
 
 on:
   workflow_dispatch: {}
+  push:
+    branches:
+      - claude/code-review-seqyto
+    paths:
+      - '.github/workflows/test-alt-sites.yml'
 
 jobs:
   test-sites:
