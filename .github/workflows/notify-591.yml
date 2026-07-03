@@ -2,7 +2,9 @@ name: 591 租屋通知
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    # 暫時測試排程：每 5 分鐘一次，用來實測一小時內的成功率。
+    # 測試結束後會改回 '*/30 * * * *'。
+    - cron: '*/5 * * * *'
   workflow_dispatch: {}
 
 permissions:
