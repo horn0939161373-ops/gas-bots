@@ -2,7 +2,7 @@
   "region": "高雄市",
   "district": "鼓山區",
   "priceMin": 0,
-  "priceMax": 0,
+  "priceMax": 20000,
   "roomType": "不限",
   "keyword": "中山大學",
   "maxResults": 10,
