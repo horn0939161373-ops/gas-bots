@@ -1,0 +1,37 @@
+name: Test LINE Push Only
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  test-line:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        working-directory: notify-bot
+        run: npm ci
+
+      - name: Send a test LINE message (bypasses 591 entirely)
+        working-directory: notify-bot
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          LINE_TARGET_ID: ${{ secrets.LINE_TARGET_ID }}
+        run: |
+          node -e "
+          const { pushNewListings } = require('./src/line');
+          pushNewListings([{
+            id: 'test-' + Date.now(),
+            title: '✅ 測試通知：LINE 設定成功！',
+            price: 12345,
+            cover: '',
+            url: 'https://github.com/horn0939161373-ops/gas-bots'
+          }]).then(() => {
+            console.log('✅ LINE push 成功送出');
+          }).catch(err => {
+            console.error('❌ LINE push 失敗:', err.message);
+            process.exit(1);
+          });
+          "
