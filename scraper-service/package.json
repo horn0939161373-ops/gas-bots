@@ -1,0 +1,14 @@
+{
+  "name": "rental-591-scraper-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "用 Playwright 真實瀏覽器渲染 591 租屋網搜尋結果，供 GAS Bot 呼叫取得物件清單",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "playwright": "^1.47.0"
+  }
+}

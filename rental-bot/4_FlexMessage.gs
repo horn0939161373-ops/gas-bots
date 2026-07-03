@@ -165,7 +165,7 @@ function handleManualSearch(replyToken, userId) {
   }
   let listings;
   try {
-    listings = fetchListings591(f, 0);
+    listings = fetchListings591(f);
   } catch (e) {
     Logger.log("❌ handleManualSearch: " + e.stack);
     replyTextMessage(replyToken, "⚠️ 查詢 591 時發生錯誤，請稍後再試。");
