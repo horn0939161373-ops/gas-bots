@@ -224,6 +224,9 @@ async function _fetchOnce(url) {
     const statusCode = response ? response.status() : 0;
 
     if (items.length > 0) {
+      console.log('--- 除錯資訊（全部物件的 id/price/cover 簡表） ---');
+      console.log(JSON.stringify(items.map(it => ({ id: it.id, price: it.price, cover: it.cover ? 'ok' : 'empty' }))));
+
       console.log('--- 除錯資訊（抓到物件，檢查價格/圖片擷取，只印前 3 筆） ---');
       for (const it of items.slice(0, 3)) {
         console.log(JSON.stringify({
