@@ -71,6 +71,58 @@ async function extractPhones(page) {
   });
 }
 
+/**
+ * 抓不到任何手機時的除錯用資料：頁面標題、部分頁面文字、連結網址樣本，
+ * 以及畫面上看起來像「價格」的葉節點連同往上兩層祖先的 outerHTML——
+ * 目的是讓 Actions log 直接看得出真實的 DOM 結構跟 class 名稱，
+ * 不需要另外打開瀏覽器開發者工具核對。
+ */
+async function debugDump(page) {
+  return page.evaluate(() => {
+    const bodyText = document.body ? document.body.innerText.slice(0, 1500) : '(無 body)';
+    const title = document.title;
+
+    const anchors = Array.from(document.querySelectorAll('a[href]'));
+    const hrefSet = new Set();
+    for (const a of anchors) {
+      const href = a.getAttribute('href') || '';
+      if (href && !href.startsWith('#') && !href.startsWith('javascript:')) hrefSet.add(href);
+    }
+    const sampleHrefs = Array.from(hrefSet).slice(0, 60);
+
+    const priceRegex = /(NT\$|NTD|\$)\s?[\d,]{3,7}|[\d,]{4,7}\s*元/;
+    const allEls = Array.from(document.querySelectorAll('body *'));
+    const priceLeafs = [];
+    for (const el of allEls) {
+      if (el.children.length > 0) continue; // 只看葉節點，內容才是最小單位
+      const text = (el.textContent || '').trim();
+      if (!text || text.length > 40) continue;
+      if (priceRegex.test(text)) {
+        priceLeafs.push(el);
+        if (priceLeafs.length >= 5) break;
+      }
+    }
+
+    function outer(el, maxLen) {
+      if (!el) return '(none)';
+      const html = el.outerHTML || '';
+      return html.length > maxLen ? html.slice(0, maxLen) + '...(截斷)' : html;
+    }
+
+    const priceSamples = priceLeafs.map(el => {
+      const parent = el.parentElement;
+      const grandparent = parent ? parent.parentElement : null;
+      return {
+        leaf: outer(el, 300),
+        parent: outer(parent, 700),
+        grandparent: outer(grandparent, 1000)
+      };
+    });
+
+    return { title, bodyText, sampleHrefs, priceSamples, anchorCount: anchors.length };
+  });
+}
+
 async function _fetchOnePage(browser, urlPage) {
   const page = await browser.newPage({ userAgent: UA });
   try {
@@ -78,7 +130,8 @@ async function _fetchOnePage(browser, urlPage) {
     await page.waitForTimeout(1500); // 讓頁面 JS 有時間渲染列表
     const items = await extractPhones(page);
     const statusCode = response ? response.status() : 0;
-    return { items, statusCode };
+    const debug = items.length === 0 ? await debugDump(page) : null;
+    return { items, statusCode, debug };
   } finally {
     await page.close();
   }
@@ -96,12 +149,26 @@ async function scrapePhones() {
   try {
     for (let pageNum = 1; pageNum <= MAX_PAGES; pageNum++) {
       const url = buildListUrl(pageNum);
-      const { items, statusCode } = await _fetchOnePage(browser, url);
+      const { items, statusCode, debug } = await _fetchOnePage(browser, url);
 
       if (pageNum === 1 && items.length === 0) {
         console.log('--- 除錯資訊（第 1 頁抓到 0 支手機） ---');
         console.log('網址:', url, '| HTTP 狀態碼:', statusCode);
-        console.log('可能是選取器跟目前頁面結構對不上，需要對照 Actions log 微調 extractPhones()。');
+        console.log('可能是選取器跟目前頁面結構對不上，需要對照下面的除錯輸出微調 extractPhones()。');
+        if (debug) {
+          console.log('頁面標題:', debug.title);
+          console.log('<a> 標籤總數:', debug.anchorCount);
+          console.log('--- 頁面文字前 1500 字 ---');
+          console.log(debug.bodyText);
+          console.log('--- 連結網址樣本（前 60 個） ---');
+          console.log(JSON.stringify(debug.sampleHrefs, null, 2));
+          console.log('--- 疑似「價格」文字節點的 DOM 結構樣本（最多 5 個） ---');
+          debug.priceSamples.forEach((s, i) => {
+            console.log(`[樣本 ${i + 1}] leaf:`, s.leaf);
+            console.log(`[樣本 ${i + 1}] parent:`, s.parent);
+            console.log(`[樣本 ${i + 1}] grandparent:`, s.grandparent);
+          });
+        }
       }
 
       const newOnes = items.filter(i => !seenIds.has(i.id));
