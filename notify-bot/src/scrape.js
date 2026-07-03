@@ -41,6 +41,24 @@ function buildListUrl(filter) {
  */
 async function extractListings(page) {
   return page.evaluate(() => {
+    // 591 頁面上除了主列表卡片，篩選欄/瀏覽紀錄等側邊小工具偶爾也會出現
+    // 連到同一個物件 id 的連結。這些區塊本身可能剛好也有「class 帶
+    // price」的元素（例如價格區間篩選下拉選單）跟裝飾用的小圖示，如果
+    // 把這種錨點也一起納入容器範圍，容易誤爬到這些不相關的小工具、抓出
+    // 篩選選單的文字當價格（實測發現過一次）。用 class 關鍵字排除掉這些
+    // 已知不是列表卡片的區塊。
+    function isInExcludedRegion(el) {
+      let node = el;
+      while (node) {
+        const cls = (node.className && typeof node.className === 'string')
+          ? node.className
+          : String((node.getAttribute && node.getAttribute('class')) || '');
+        if (/filter|tools|history|search-panel|search-bar/i.test(cls)) return true;
+        node = node.parentElement;
+      }
+      return false;
+    }
+
     const idToAnchors = new Map();
     const anchors = Array.from(document.querySelectorAll('a[href]'));
 
@@ -48,6 +66,7 @@ async function extractListings(page) {
       const href = a.getAttribute('href') || '';
       const m = href.match(/\/(\d{6,})(?:[/?]|$)/);
       if (!m) continue;
+      if (isInExcludedRegion(a)) continue;
       const postId = m[1];
       if (!idToAnchors.has(postId)) idToAnchors.set(postId, []);
       idToAnchors.get(postId).push(a);
@@ -120,6 +139,12 @@ async function extractListings(page) {
       const priceSource = priceEl ? priceEl.innerText : text;
       const priceMatch = priceSource.match(/([\d,]{3,})\s*元/);
       const price = priceMatch ? Number(priceMatch[1].replace(/,/g, '')) : 0;
+
+      // 591 上不會有租金 0 元的物件；抓到 0 代表容器選錯了、不是真的卡片，
+      // 與其推播一張看起來壞掉的 $0 卡片，不如直接跳過這筆，等下次排程
+      // （選取器邏輯不變的話，同一筆物件下次多半還是抓不到，但至少不會
+      // 把明顯錯誤的資料推給使用者）。
+      if (price === 0) continue;
 
       const img = container.querySelector('img');
       const cover = pickImageUrl(img);
