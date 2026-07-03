@@ -10,14 +10,18 @@
 
 ```
 GitHub Actions（排程，預設每 30 分鐘）
-  → 開 headless Chromium 到 591 搜尋頁
-  → 從渲染完的 DOM 擷取物件資料
+  → 開 headless Chromium 到 591 搜尋頁（依刊登時間新到舊排序，只取最新 N 筆）
+  → 從渲染完的 DOM 擷取物件資料，並從頁面的 __NUXT__ 狀態補上地址
   → 跟 state/seen-listings.json 比對，找出新物件
+  → （若開啟距離篩選）用地址查地理座標，排除離地標太遠的新物件
   → 用 LINE Messaging API 推播
-  → 把新增的物件 id 寫回 state/seen-listings.json 並 commit
+  → 把完整物件資料寫回 state/listings-data.json、重新產生 dashboard.html
+  → 把新增的物件 id 寫回 state/seen-listings.json，全部一起 commit
 ```
 
-沒有資料庫、沒有伺服器——已推播紀錄直接存成 repo 裡的 JSON 檔，每次執行完自動 commit。除了 `state/seen-listings.json`（只記已推播過的物件 id，用來判斷新舊），每次抓到的完整物件資料（標題/價格/圖片/連結）也會保留在 `state/listings-data.json`，方便之後回顧「之前到底抓到了什麼」，不是只有一串 id。
+沒有資料庫、沒有伺服器——已推播紀錄直接存成 repo 裡的 JSON 檔，每次執行完自動 commit。除了 `state/seen-listings.json`（只記已推播過的物件 id，用來判斷新舊），每次抓到的完整物件資料（標題/價格/圖片/連結/地址/距離）也會保留在 `state/listings-data.json`，方便之後回顧「之前到底抓到了什麼」，不是只有一串 id。
+
+每次執行也會重新產生一份 `dashboard.html`——一個把資料直接嵌進去的自包含視覺化頁面，不用架伺服器、不依賴 GitHub Pages，從 repo 網頁下載下來雙擊就能在瀏覽器打開，可以搜尋、依租金/距離排序，瀏覽目前保留的所有抓取紀錄（見下方「查看視覺化頁面」）。
 
 ## 你需要做的事（僅這兩步，跟身份綁定、無法代勞）
 
@@ -50,6 +54,14 @@ GitHub Actions（排程，預設每 30 分鐘）
   "priceMax": 0,
   "roomType": "不限",
   "keyword": "",
+  "maxResults": 10,
+  "distanceFilter": {
+    "enabled": false,
+    "landmarkName": "",
+    "landmarkLat": 0,
+    "landmarkLng": 0,
+    "maxDistanceKm": 3
+  },
   "balcony": false,
   "elevator": false,
   "pet": false,
@@ -66,6 +78,10 @@ GitHub Actions（排程，預設每 30 分鐘）
 | `roomType` | 房型：`"不限"`、`"整層住家"`、`"獨立套房"`、`"分租套房"`、`"雅房"`、`"別墅"` |
 | `keyword` | 關鍵字（例如 `"近捷運"`），不需要留空字串 `""` |
 | `maxResults` | 每次只處理「最新 N 筆」刊登物件（依刊登時間排序），預設 `10` |
+| `distanceFilter.enabled` | 是否啟用距離篩選，`true`/`false`。開啟後會用地址查地理座標，跟下面設定的地標算直線距離，超過門檻的新物件不會推播（地址查不到座標時，為避免漏掉真正的新物件，仍會照常推播） |
+| `distanceFilter.landmarkName` | 地標名稱（顯示在推播卡片跟視覺化頁面上），例如 `"國立中山大學"` |
+| `distanceFilter.landmarkLat` / `landmarkLng` | 地標的經緯度座標 |
+| `distanceFilter.maxDistanceKm` | 距離門檻（公里），預設 `3` |
 | `balcony` | 是否要有陽台，`true`/`false` |
 | `elevator` | 是否要有電梯，`true`/`false` |
 | `pet` | 是否可養寵物，`true`/`false` |
@@ -100,6 +116,16 @@ GitHub Actions（排程，預設每 30 分鐘）
 | 前鎮區 | 249 | 鳳山區 | 268 |
 
 其他縣市的行政區代碼需要時可以自己查：到 591 網站選好縣市與行政區，從網址列的 `section=` 參數取得代碼，直接填數字代碼到 `district` 欄位也可以用（不一定要中文名稱），或是把新查到的代碼加進 `src/config.js` 的 `SECTION_MAP`。
+
+## 查看視覺化頁面
+
+每次執行完，repo 裡的 `notify-bot/dashboard.html` 都會更新成最新一份完整抓取紀錄（跟 `state/listings-data.json` 是同步的）。打開方式：
+
+1. 到 repo 網頁上的 `notify-bot/dashboard.html`，點右上角「⋯」→「Download raw file」（或先 `git pull` 到本機）
+2. 下載下來的檔案直接雙擊，用瀏覽器打開即可——資料是直接嵌在 HTML 裡的，不需要網路、不需要架伺服器
+3. 頁面上可以搜尋標題/地址，也可以切換依租金或距離排序
+
+因為這個 repo 是 private，GitHub Pages 免費方案通常無法直接開一個固定網址持續瀏覽，所以目前是每次下載最新檔案的方式；如果之後想要固定網址、不用每次下載，可以考慮升級成付費方案並開啟 GitHub Pages。
 
 ## 執行排程
 

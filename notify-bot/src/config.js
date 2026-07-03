@@ -78,6 +78,8 @@ function resolveConfig(config) {
 
   const region = resolveRegion(config.region);
 
+  const df = config.distanceFilter || {};
+
   return {
     region,
     section: resolveDistrict(region, config.district),
@@ -86,7 +88,14 @@ function resolveConfig(config) {
     kind: resolveRoomType(config.roomType),
     keyword: config.keyword || '',
     facilities,
-    maxResults: Number(config.maxResults) > 0 ? Number(config.maxResults) : 10
+    maxResults: Number(config.maxResults) > 0 ? Number(config.maxResults) : 10,
+    distanceFilter: {
+      enabled: df.enabled === true && Number.isFinite(Number(df.landmarkLat)) && Number.isFinite(Number(df.landmarkLng)),
+      landmarkName: df.landmarkName || '',
+      landmarkLat: Number(df.landmarkLat),
+      landmarkLng: Number(df.landmarkLng),
+      maxDistanceKm: Number(df.maxDistanceKm) > 0 ? Number(df.maxDistanceKm) : 3
+    }
   };
 }
 

@@ -6,6 +6,13 @@
   "roomType": "不限",
   "keyword": "中山大學",
   "maxResults": 10,
+  "distanceFilter": {
+    "enabled": true,
+    "landmarkName": "國立中山大學",
+    "landmarkLat": 22.6272,
+    "landmarkLng": 120.2649,
+    "maxDistanceKm": 3
+  },
   "balcony": true,
   "elevator": false,
   "pet": false,

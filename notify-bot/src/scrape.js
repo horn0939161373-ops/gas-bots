@@ -197,6 +197,48 @@ async function extractListings(page) {
 }
 
 /**
+ * 591 是 Nuxt.js 網站，頁面會內嵌 window.__NUXT__ 全域初始狀態物件，裡面
+ * 有結構化的物件清單（含 address 欄位，例如「鼓山區-美術東四路692號」），
+ * 比從卡片文字裡硬抓乾淨很多。實測過這個物件裡沒有現成經緯度座標，只有
+ * 地址文字，所以還是要另外做地理編碼才能算距離，但至少地址本身不用再
+ * 從渲染完的 DOM 文字裡土法煉鋼抓。用「物件 id」對應回 DOM 擷取到的結果。
+ */
+async function extractNuxtAddresses(page) {
+  return page.evaluate(() => {
+    function findItemsArray(obj, depth, seen) {
+      if (!obj || typeof obj !== 'object' || depth > 8) return null;
+      if (seen.has(obj)) return null;
+      seen.add(obj);
+      if (Array.isArray(obj) && obj.length > 0 && obj[0] && typeof obj[0] === 'object' && 'address' in obj[0] && 'id' in obj[0]) {
+        return obj;
+      }
+      for (const key of Object.keys(obj)) {
+        let val;
+        try { val = obj[key]; } catch (e) { continue; }
+        const found = findItemsArray(val, depth + 1, seen);
+        if (found) return found;
+      }
+      return null;
+    }
+
+    const addressById = {};
+    try {
+      const itemsArr = findItemsArray(window.__NUXT__, 0, new WeakSet());
+      if (itemsArr) {
+        for (const item of itemsArr) {
+          if (item && item.id != null && item.address) {
+            addressById[String(item.id)] = item.address;
+          }
+        }
+      }
+    } catch (e) {
+      // __NUXT__ 結構以後可能會變，讀不到就當作沒有地址資料，不影響其他功能
+    }
+    return addressById;
+  });
+}
+
+/**
  * 591 的防護會不定期把某些 GitHub Actions 出口 IP 列入黑名單（實測發現
  * 同一個 workflow 不同次執行、拿到不同 IP 時，結果會在「完全被擋」跟
  * 「完全正常」之間切換）。單次執行內重試對同一個 runner IP 幫助有限，
@@ -228,100 +270,19 @@ async function _fetchOnce(url) {
     const statusCode = response ? response.status() : 0;
 
     if (items.length > 0) {
-      // 除錯用：研究能不能做「距離篩選」，先看頁面上有沒有現成的地址/
-      // 經緯度資料可以用（例如 Vue SSR 常見的全域初始狀態物件），這樣才
-      // 不用另外呼叫地理編碼 API 或多開一堆物件詳情頁。
-      const geoDebug = await page.evaluate(() => {
-        const globalKeys = Object.keys(window).filter(k => /state|nuxt|initial|__NEXT|preload/i.test(k));
-        const anchors = document.querySelectorAll('a[href]');
-        let firstContainer = null;
-        for (const a of anchors) {
-          const href = a.getAttribute('href') || '';
-          if (/^(?:https?:\/\/[^/]+)?\/(\d{6,})(?:[/?]|$)/.test(href)) {
-            firstContainer = a.closest('li') || a.closest('article') || a.parentElement;
-            break;
-          }
-        }
-        const dataAttrs = firstContainer
-          ? Array.from(firstContainer.querySelectorAll('*')).slice(0, 50).flatMap(el =>
-              Array.from(el.attributes || [])
-                .filter(attr => /lat|lng|lon|geo|address|addr/i.test(attr.name))
-                .map(attr => `${attr.name}=${attr.value}`)
-            )
-          : [];
-        const firstCardText = firstContainer ? firstContainer.innerText.slice(0, 300) : '';
+      const addressById = await extractNuxtAddresses(page);
+      for (const it of items) {
+        it.address = addressById[it.id] || '';
+      }
 
-        // 深入 __NUXT__ 全域初始狀態物件，找看看有沒有座標或地址欄位。
-        // 591 頁面上會顯示「距OO醫院217公尺」這種資訊，代表後端一定算過
-        // 座標，這裡碰運氣看前端拿到的初始資料裡有沒有一起帶出來。
-        let nuxtMatches = [];
-        let firstItemKeys = null;
-        let firstItemRaw = null;
-        try {
-          const seen = new WeakSet();
-          const keyRegex = /^(lat|lng|lon|latitude|longitude|address|addr|coord)/i;
-          function walk(obj, path, depth) {
-            if (nuxtMatches.length >= 40 || depth > 6 || !obj || typeof obj !== 'object') return;
-            if (seen.has(obj)) return;
-            seen.add(obj);
-            for (const key of Object.keys(obj)) {
-              if (nuxtMatches.length >= 40) return;
-              let val;
-              try { val = obj[key]; } catch (e) { continue; }
-              if (keyRegex.test(key) && (typeof val === 'number' || typeof val === 'string')) {
-                nuxtMatches.push(`${path}.${key} = ${JSON.stringify(val).slice(0, 60)}`);
-              } else if (val && typeof val === 'object') {
-                walk(val, `${path}.${key}`, depth + 1);
-              }
-            }
-          }
-          walk(window.__NUXT__, '__NUXT__', 0);
-
-          // 找到帶 address 欄位的那個 items 陣列後，把它「第一筆」的所有
-          // 欄位名稱跟完整內容都印出來，這樣才不會漏看沒被上面關鍵字猜到
-          // 的座標欄位名稱（例如可能叫 position/geo/point/x/y 之類）。
-          function findItemsArray(obj, depth, seen2) {
-            if (!obj || typeof obj !== 'object' || depth > 8) return null;
-            if (seen2.has(obj)) return null;
-            seen2.add(obj);
-            if (Array.isArray(obj) && obj.length > 0 && obj[0] && typeof obj[0] === 'object' && 'address' in obj[0]) {
-              return obj;
-            }
-            for (const key of Object.keys(obj)) {
-              let val;
-              try { val = obj[key]; } catch (e) { continue; }
-              const found = findItemsArray(val, depth + 1, seen2);
-              if (found) return found;
-            }
-            return null;
-          }
-          const itemsArr = findItemsArray(window.__NUXT__, 0, new WeakSet());
-          if (itemsArr && itemsArr[0]) {
-            firstItemKeys = Object.keys(itemsArr[0]);
-            firstItemRaw = JSON.stringify(itemsArr[0]).slice(0, 1500);
-          }
-        } catch (e) {
-          nuxtMatches = [`(讀取 __NUXT__ 時出錯: ${e.message})`];
-        }
-
-        return { globalKeys, dataAttrs, firstCardText, nuxtMatches, firstItemKeys, firstItemRaw };
-      });
-      console.log('--- 除錯資訊（研究距離篩選可行性：全域變數/地址屬性/卡片全文/__NUXT__ 座標搜尋） ---');
-      console.log(JSON.stringify(geoDebug));
-
-      console.log('--- 除錯資訊（全部物件的 id/price/cover 簡表） ---');
-      console.log(JSON.stringify(items.map(it => ({ id: it.id, price: it.price, cover: it.cover ? 'ok' : 'empty' }))));
-
-      console.log('--- 除錯資訊（抓到物件，檢查價格/圖片擷取，只印前 3 筆） ---');
+      console.log(`--- 抓到 ${items.length} 筆物件，前 3 筆檢查 ---`);
       for (const it of items.slice(0, 3)) {
         console.log(JSON.stringify({
           id: it.id,
           title: it.title.slice(0, 20),
           price: it.price,
-          cover: it.cover,
-          debugPriceSource: it._debugPriceSource,
-          debugHasPriceEl: it._debugHasPriceEl,
-          debugImgAttrs: it._debugImgAttrs
+          cover: it.cover ? 'ok' : 'empty',
+          address: it.address
         }));
       }
 
@@ -341,8 +302,6 @@ async function _fetchOnce(url) {
             debugContainerHtml: it._debugContainerHtml
           }));
         }
-      } else {
-        console.log('--- 除錯資訊：這批物件全部都有正確價格與圖片 ---');
       }
     }
 

@@ -47,6 +47,8 @@ function saveListingsData(path, listings, existing) {
       price: item.price,
       cover: item.cover,
       url: item.url,
+      address: item.address || (existing[item.id] && existing[item.id].address) || '',
+      distanceKm: typeof item.distanceKm === 'number' ? item.distanceKm : (existing[item.id] ? existing[item.id].distanceKm : null),
       scrapedAt: now
     };
   }
@@ -54,6 +56,7 @@ function saveListingsData(path, listings, existing) {
   const trimmed = entries.slice(-MAX_KEEP);
   const result = Object.fromEntries(trimmed.map(item => [item.id, item]));
   fs.writeFileSync(path, JSON.stringify(result, null, 2) + '\n');
+  return result;
 }
 
 module.exports = { loadSeenIds, saveSeenIds, loadListingsData, saveListingsData };

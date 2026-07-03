@@ -21,19 +21,31 @@ function isValidHttpUrl(url) {
 
 function buildBubble(item) {
   const coverUrl = isValidHttpUrl(item.cover) ? item.cover : FALLBACK_IMAGE;
+  const infoRows = [
+    {
+      type: 'box', layout: 'horizontal',
+      contents: [
+        { type: 'text', text: '租金', color: '#475569', size: 'xs', flex: 2 },
+        { type: 'text', text: `$${item.price}`, weight: 'bold', size: 'xs', align: 'end', color: '#DC2626', flex: 3 }
+      ]
+    }
+  ];
+  if (typeof item.distanceKm === 'number') {
+    infoRows.push({
+      type: 'box', layout: 'horizontal',
+      contents: [
+        { type: 'text', text: '距離', color: '#475569', size: 'xs', flex: 2 },
+        { type: 'text', text: `約 ${item.distanceKm} 公里`, size: 'xs', align: 'end', flex: 3 }
+      ]
+    });
+  }
   const bodyContents = [
     { type: 'image', url: coverUrl, size: 'full', aspectRatio: '20:13', aspectMode: 'cover' },
     {
       type: 'box', layout: 'vertical', spacing: 'sm', paddingAll: 'md',
       contents: [
         { type: 'text', text: String(item.title || '未命名物件').slice(0, 200), weight: 'bold', size: 'sm', wrap: true },
-        {
-          type: 'box', layout: 'horizontal',
-          contents: [
-            { type: 'text', text: '租金', color: '#475569', size: 'xs', flex: 2 },
-            { type: 'text', text: `$${item.price}`, weight: 'bold', size: 'xs', align: 'end', color: '#DC2626', flex: 3 }
-          ]
-        }
+        ...infoRows
       ]
     }
   ];
