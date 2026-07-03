@@ -4,15 +4,22 @@
 
 const LINE_PUSH_URL = 'https://api.line.me/v2/bot/message/push';
 
+// LINE 的 image/uri 元件都要求合法的 https:// 網址；591 頁面上抓到的
+// <img> src 常常是相對路徑、data URI 或懶載入用的空白圖，直接塞進去
+// 會讓整則訊息被 LINE API 判定為 400 invalid（曾經因此整批推播失敗）。
+function isValidHttpUrl(url) {
+  return typeof url === 'string' && /^https?:\/\/\S+$/.test(url) && url.length <= 1000;
+}
+
 function buildBubble(item) {
   const bodyContents = [];
-  if (item.cover) {
+  if (isValidHttpUrl(item.cover)) {
     bodyContents.push({ type: 'image', url: item.cover, size: 'full', aspectRatio: '20:13', aspectMode: 'cover' });
   }
   bodyContents.push({
     type: 'box', layout: 'vertical', spacing: 'sm', paddingAll: 'md',
     contents: [
-      { type: 'text', text: item.title, weight: 'bold', size: 'sm', wrap: true },
+      { type: 'text', text: String(item.title || '未命名物件').slice(0, 200), weight: 'bold', size: 'sm', wrap: true },
       {
         type: 'box', layout: 'horizontal',
         contents: [
@@ -23,6 +30,8 @@ function buildBubble(item) {
     ]
   });
 
+  const detailUri = isValidHttpUrl(item.url) ? item.url : 'https://rent.591.com.tw/';
+
   return {
     type: 'bubble', size: 'mega',
     body: { type: 'box', layout: 'vertical', contents: bodyContents },
@@ -30,7 +39,7 @@ function buildBubble(item) {
       type: 'box', layout: 'vertical',
       contents: [{
         type: 'button', style: 'primary', color: '#0F766E', height: 'sm',
-        action: { type: 'uri', label: '查看物件詳情', uri: item.url }
+        action: { type: 'uri', label: '查看物件詳情', uri: detailUri }
       }]
     }
   };
