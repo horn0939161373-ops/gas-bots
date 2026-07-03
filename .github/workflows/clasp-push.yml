@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'stock-bot/**'
+      - 'rental-bot/**'
 
 jobs:
   deploy:
@@ -27,5 +27,5 @@ jobs:
         run: echo '${{ secrets.CLASPRC_JSON }}' > ~/.clasprc.json
 
       - name: Push to GAS
-        working-directory: stock-bot
+        working-directory: rental-bot
         run: clasp push
