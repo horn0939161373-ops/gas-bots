@@ -250,9 +250,37 @@ async function _fetchOnce(url) {
             )
           : [];
         const firstCardText = firstContainer ? firstContainer.innerText.slice(0, 300) : '';
-        return { globalKeys, dataAttrs, firstCardText };
+
+        // 深入 __NUXT__ 全域初始狀態物件，找看看有沒有座標或地址欄位。
+        // 591 頁面上會顯示「距OO醫院217公尺」這種資訊，代表後端一定算過
+        // 座標，這裡碰運氣看前端拿到的初始資料裡有沒有一起帶出來。
+        let nuxtMatches = [];
+        try {
+          const seen = new WeakSet();
+          const keyRegex = /^(lat|lng|lon|latitude|longitude|address|addr|coord)/i;
+          function walk(obj, path, depth) {
+            if (nuxtMatches.length >= 25 || depth > 6 || !obj || typeof obj !== 'object') return;
+            if (seen.has(obj)) return;
+            seen.add(obj);
+            for (const key of Object.keys(obj)) {
+              if (nuxtMatches.length >= 25) return;
+              let val;
+              try { val = obj[key]; } catch (e) { continue; }
+              if (keyRegex.test(key) && (typeof val === 'number' || typeof val === 'string')) {
+                nuxtMatches.push(`${path}.${key} = ${JSON.stringify(val).slice(0, 60)}`);
+              } else if (val && typeof val === 'object') {
+                walk(val, `${path}.${key}`, depth + 1);
+              }
+            }
+          }
+          walk(window.__NUXT__, '__NUXT__', 0);
+        } catch (e) {
+          nuxtMatches = [`(讀取 __NUXT__ 時出錯: ${e.message})`];
+        }
+
+        return { globalKeys, dataAttrs, firstCardText, nuxtMatches };
       });
-      console.log('--- 除錯資訊（研究距離篩選可行性：全域變數/地址屬性/卡片全文） ---');
+      console.log('--- 除錯資訊（研究距離篩選可行性：全域變數/地址屬性/卡片全文/__NUXT__ 座標搜尋） ---');
       console.log(JSON.stringify(geoDebug));
 
       console.log('--- 除錯資訊（全部物件的 id/price/cover 簡表） ---');
