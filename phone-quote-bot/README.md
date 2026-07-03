@@ -78,14 +78,14 @@ GitHub Pages（docs/ 資料夾）
 
 ## 除錯
 
-這支 bot 開發時，環境的對外網路政策擋掉了 `miko3c.com` 這個網域，沒辦法在開發階段實際打開頁面核對 DOM 結構，`src/scrape.js` 裡的選取邏輯是依常見電商頁面結構（商品連結 + 價格文字）做的最佳猜測。
+`https://www.miko3c.com/price/phone/` 實際上是一個「價格總覽」表格（型號｜原廠建議售價｜米可破盤價｜優惠活動），每一列**沒有連到商品詳情頁的連結**。`src/scrape.js` 的 `parsePhonesFromText()` 是直接解析渲染完成頁面的 `innerText`，找「標題行 → 原價數字 → 米可破盤價數字」這個固定樣式，不依賴任何 CSS class（已用 Actions log 的實際輸出核對過解析邏輯）。
 
-第一次跑完如果 log 顯示「抓到 0 支手機」，代表 `src/scrape.js` 裡 `extractPhones` 的 DOM 選取邏輯跟目前米可手機館的頁面結構對不上：
+如果米可改版導致 log 顯示「抓到 0 支手機」：
 
-1. 到 Actions 的執行紀錄裡看 log 裡印出的除錯資訊（HTTP 狀態碼等）
-2. 或本機安裝 Playwright 後直接跑 `node -e "require('./src/scrape').scrapePhones().then(r=>console.log(JSON.stringify(r.slice(0,5),null,2)))"`，打開瀏覽器開發者工具實際核對 `https://www.miko3c.com/price/phone/` 的商品連結、標題、價格分別長在哪個元素裡，調整選取器
+1. 到 Actions 的執行紀錄裡看 log 印出的除錯資訊（頁面標題、`<a>` 標籤總數、頁面文字前 2000 字），通常可以直接看出格式哪裡變了
+2. 或本機安裝 Playwright 後直接跑 `node -e "require('./src/scrape').scrapePhones().then(r=>console.log(JSON.stringify(r.slice(0,5),null,2)))"`，打開瀏覽器開發者工具核對 `https://www.miko3c.com/price/phone/` 目前的文字排列方式，調整 `parsePhonesFromText()` 裡的規則
 
-如果分頁網址格式（目前猜測是 `?page=2`、`?page=3`...）跟實際不符，`buildListUrl()` 也需要跟著調整；`scrapePhones()` 已經做了「某一頁沒有新商品就停止翻頁」的保護，就算分頁參數猜錯、每頁內容重複，也只會抓到第一頁的資料，不會無限迴圈。
+`parsePhonesFromText()` 本身也可以直接單元測試，不需要真的連網：`require('./src/scrape').parsePhonesFromText(某段文字)`。
 
 ## 費用 / Actions 分鐘數注意事項
 
