@@ -66,6 +66,13 @@ async function extractListings(page) {
       // 圖片：591 用懶載入，src 常常是佔位圖，真正的網址可能在其他屬性
       const img = container.querySelector('img');
       let cover = '';
+      const debugImgAttrs = img ? {
+        src: img.getAttribute('src'),
+        dataSrc: img.getAttribute('data-src'),
+        dataOriginal: img.getAttribute('data-original'),
+        dataLazySrc: img.getAttribute('data-lazy-src'),
+        srcset: img.getAttribute('srcset')
+      } : null;
       if (img) {
         cover = img.getAttribute('src') || img.getAttribute('data-src') ||
                 img.getAttribute('data-original') || img.getAttribute('data-lazy-src') || '';
@@ -85,7 +92,10 @@ async function extractListings(page) {
         title,
         price,
         cover,
-        url: 'https://rent.591.com.tw/' + postId
+        url: 'https://rent.591.com.tw/' + postId,
+        _debugPriceSource: priceSource.slice(0, 150),
+        _debugHasPriceEl: !!priceEl,
+        _debugImgAttrs: debugImgAttrs
       });
     }
     return results;
@@ -122,6 +132,21 @@ async function _fetchOnce(url) {
 
     const items = await extractListings(page);
     const statusCode = response ? response.status() : 0;
+
+    if (items.length > 0) {
+      console.log('--- 除錯資訊（抓到物件，檢查價格/圖片擷取，只印前 3 筆） ---');
+      for (const it of items.slice(0, 3)) {
+        console.log(JSON.stringify({
+          id: it.id,
+          title: it.title.slice(0, 20),
+          price: it.price,
+          cover: it.cover,
+          debugPriceSource: it._debugPriceSource,
+          debugHasPriceEl: it._debugHasPriceEl,
+          debugImgAttrs: it._debugImgAttrs
+        }));
+      }
+    }
 
     if (items.length === 0) {
       // 除錯用：抓不到任何物件時，印出頁面狀態方便判斷是「被擋」還是「選取器沒對到」
