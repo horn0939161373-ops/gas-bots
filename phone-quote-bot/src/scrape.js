@@ -37,9 +37,10 @@ function isNoise(line) {
   return HEADER_NOISE.has(line);
 }
 
-function slugify(title) {
-  return title.trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-+|-+$/g, '');
-}
+// id 直接用完整標題本身（而不是正規化過的 slug）：id 只當 JSON key 用，
+// 不會出現在網址裡，不需要「網址安全」；曾經用 slugify 把非英數字元都
+// 換成 "-"，結果 "Galaxy S26" 跟 "Galaxy S26+" 的 "+" 都被拿掉，變成同一個
+// id，導致這兩支手機的報價追蹤互相覆蓋。
 
 /**
  * 解析渲染完成頁面的 innerText，找出「標題行 → 原價 → 米可破盤價」的固定樣式。
@@ -69,7 +70,7 @@ function parsePhonesFromText(bodyText) {
 
     if (prices.length === 2) {
       const [msrp, price] = prices;
-      results.push({ id: slugify(title), title, price, msrp, cover: '', url: LIST_URL });
+      results.push({ id: title, title, price, msrp, cover: '', url: LIST_URL });
       i = j;
       while (i < dataLines.length && isPromo(dataLines[i])) i++;
     } else {
