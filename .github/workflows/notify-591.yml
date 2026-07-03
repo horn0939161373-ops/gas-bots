@@ -2,9 +2,7 @@ name: 591 租屋通知
 
 on:
   schedule:
-    # 暫時改成每分鐘，測試 GitHub 排程本身到底會不會自動觸發。
-    # 測完會改回 '*/30 * * * *'。
-    - cron: '* * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch: {}
 
 permissions:
