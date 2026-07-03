@@ -255,15 +255,17 @@ async function _fetchOnce(url) {
         // 591 頁面上會顯示「距OO醫院217公尺」這種資訊，代表後端一定算過
         // 座標，這裡碰運氣看前端拿到的初始資料裡有沒有一起帶出來。
         let nuxtMatches = [];
+        let firstItemKeys = null;
+        let firstItemRaw = null;
         try {
           const seen = new WeakSet();
           const keyRegex = /^(lat|lng|lon|latitude|longitude|address|addr|coord)/i;
           function walk(obj, path, depth) {
-            if (nuxtMatches.length >= 25 || depth > 6 || !obj || typeof obj !== 'object') return;
+            if (nuxtMatches.length >= 40 || depth > 6 || !obj || typeof obj !== 'object') return;
             if (seen.has(obj)) return;
             seen.add(obj);
             for (const key of Object.keys(obj)) {
-              if (nuxtMatches.length >= 25) return;
+              if (nuxtMatches.length >= 40) return;
               let val;
               try { val = obj[key]; } catch (e) { continue; }
               if (keyRegex.test(key) && (typeof val === 'number' || typeof val === 'string')) {
@@ -274,11 +276,35 @@ async function _fetchOnce(url) {
             }
           }
           walk(window.__NUXT__, '__NUXT__', 0);
+
+          // 找到帶 address 欄位的那個 items 陣列後，把它「第一筆」的所有
+          // 欄位名稱跟完整內容都印出來，這樣才不會漏看沒被上面關鍵字猜到
+          // 的座標欄位名稱（例如可能叫 position/geo/point/x/y 之類）。
+          function findItemsArray(obj, depth, seen2) {
+            if (!obj || typeof obj !== 'object' || depth > 8) return null;
+            if (seen2.has(obj)) return null;
+            seen2.add(obj);
+            if (Array.isArray(obj) && obj.length > 0 && obj[0] && typeof obj[0] === 'object' && 'address' in obj[0]) {
+              return obj;
+            }
+            for (const key of Object.keys(obj)) {
+              let val;
+              try { val = obj[key]; } catch (e) { continue; }
+              const found = findItemsArray(val, depth + 1, seen2);
+              if (found) return found;
+            }
+            return null;
+          }
+          const itemsArr = findItemsArray(window.__NUXT__, 0, new WeakSet());
+          if (itemsArr && itemsArr[0]) {
+            firstItemKeys = Object.keys(itemsArr[0]);
+            firstItemRaw = JSON.stringify(itemsArr[0]).slice(0, 1500);
+          }
         } catch (e) {
           nuxtMatches = [`(讀取 __NUXT__ 時出錯: ${e.message})`];
         }
 
-        return { globalKeys, dataAttrs, firstCardText, nuxtMatches };
+        return { globalKeys, dataAttrs, firstCardText, nuxtMatches, firstItemKeys, firstItemRaw };
       });
       console.log('--- 除錯資訊（研究距離篩選可行性：全域變數/地址屬性/卡片全文/__NUXT__ 座標搜尋） ---');
       console.log(JSON.stringify(geoDebug));
