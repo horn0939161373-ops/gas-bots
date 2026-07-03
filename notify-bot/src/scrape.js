@@ -55,11 +55,26 @@ async function extractListings(page) {
       const text = container.innerText.replace(/\s+/g, ' ').trim();
       if (!text) continue;
 
-      const priceMatch = text.match(/([\d,]{3,})\s*元?\s*\/?\s*月?/);
+      // 價格：優先找 class 帶 price 的元素縮小範圍，且一定要求數字後面緊接
+      // 「元」，避免抓到坪數、樓層、瀏覽次數等卡片上其他跟價格無關的數字
+      // （這個問題造成過推播出來的租金是錯的）。
+      const priceEl = container.querySelector('[class*="price" i]');
+      const priceSource = priceEl ? priceEl.innerText : text;
+      const priceMatch = priceSource.match(/([\d,]{3,})\s*元/);
       const price = priceMatch ? Number(priceMatch[1].replace(/,/g, '')) : 0;
 
+      // 圖片：591 用懶載入，src 常常是佔位圖，真正的網址可能在其他屬性
       const img = container.querySelector('img');
-      const cover = img ? (img.getAttribute('src') || img.getAttribute('data-src') || '') : '';
+      let cover = '';
+      if (img) {
+        cover = img.getAttribute('src') || img.getAttribute('data-src') ||
+                img.getAttribute('data-original') || img.getAttribute('data-lazy-src') || '';
+        if (!cover || cover.startsWith('data:')) {
+          const srcset = img.getAttribute('srcset') || img.getAttribute('data-srcset');
+          if (srcset) cover = srcset.split(',')[0].trim().split(' ')[0];
+        }
+        if (cover && cover.startsWith('data:')) cover = ''; // 懶載入佔位圖，視為沒抓到
+      }
 
       const titleEl = container.querySelector('h3, h4, [class*="title"]');
       const title = (titleEl ? titleEl.innerText : text.slice(0, 30)).trim();
@@ -93,6 +108,18 @@ async function _fetchOnce(url) {
     const page = await browser.newPage({ userAgent: UA });
     const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
     await page.waitForTimeout(2000); // 讓頁面 JS 有時間解密並渲染列表
+
+    // 591 的物件圖片是懶載入，只有捲到可視範圍才會真正載入圖片網址，
+    // 先把整頁捲過一遍，讓更多卡片的圖片有機會載入完成再擷取。
+    await page.evaluate(async () => {
+      for (let i = 0; i < 10; i++) {
+        window.scrollBy(0, window.innerHeight);
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+      window.scrollTo(0, 0);
+    });
+    await page.waitForTimeout(500);
+
     const items = await extractListings(page);
     const statusCode = response ? response.status() : 0;
 
