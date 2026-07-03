@@ -1,6 +1,11 @@
 name: Test 591 Scrape Connectivity
 
 on:
+  push:
+    branches:
+      - claude/code-review-seqyto
+    paths:
+      - '.github/workflows/test-591-scrape.yml'
   workflow_dispatch:
     inputs:
       region:
