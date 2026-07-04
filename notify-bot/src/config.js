@@ -41,13 +41,16 @@ function resolveDistrict(regionCode, name) {
   return '';
 }
 
-// 設備 boolean 欄位 → 591 option 參數代碼
+// 設備 boolean 欄位 → 591 篩選代碼。注意：591 把設備拆成「兩個不同的
+// 網址參數」——冷氣等家電屬於 option，陽台/電梯/寵物/開伙屬於 other。
+// 之前全部塞進 option，結果 591 只認得冷氣（cold），陽台/電梯/寵物/開伙
+// 四項篩選其實完全沒生效，所以這裡記下每個欄位對應的參數群組。
 const FACILITY_FIELD_MAP = {
-  balcony: 'balcony_1',
-  elevator: 'lift',
-  pet: 'pet',
-  airConditioner: 'cold',
-  cooking: 'cook'
+  balcony: { param: 'other', value: 'balcony_1' },
+  elevator: { param: 'other', value: 'lift' },
+  pet: { param: 'other', value: 'pet' },
+  airConditioner: { param: 'option', value: 'cold' },
+  cooking: { param: 'other', value: 'cook' }
 };
 
 function resolveRegion(name) {
@@ -72,9 +75,14 @@ function resolveRoomType(name) {
 
 /** 把 config.json 讀到的物件轉成 scrapeListings() 需要的 filter 格式 */
 function resolveConfig(config) {
-  const facilities = Object.keys(FACILITY_FIELD_MAP)
-    .filter(field => config[field] === true)
-    .map(field => FACILITY_FIELD_MAP[field]);
+  // 依 591 的參數群組分別收集：option（家電）與 other（陽台/電梯等）。
+  const facilities = { option: [], other: [] };
+  for (const field of Object.keys(FACILITY_FIELD_MAP)) {
+    if (config[field] === true) {
+      const { param, value } = FACILITY_FIELD_MAP[field];
+      facilities[param].push(value);
+    }
+  }
 
   const region = resolveRegion(config.region);
 

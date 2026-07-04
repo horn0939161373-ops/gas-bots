@@ -17,10 +17,16 @@ function buildListUrl(filter) {
   if (filter.section) params.set('section', String(filter.section));
   if (filter.kind && filter.kind !== '0') params.set('kind', String(filter.kind));
   if (filter.priceMin || filter.priceMax) {
-    params.set('rentprice', `${filter.priceMin || 0}_${filter.priceMax || 999999}`);
+    // 591 自訂租金區間用「逗號」分隔（min,max），不是底線；用底線 591 不
+    // 會套用價格篩選。
+    params.set('rentprice', `${filter.priceMin || 0},${filter.priceMax || 999999}`);
   }
-  if (filter.keyword) params.set('keyword', filter.keyword);
-  if (filter.facilities && filter.facilities.length) params.set('option', filter.facilities.join(','));
+  // 591 搜尋關鍵字參數名稱是 keywords（複數），用單數 keyword 會被忽略。
+  if (filter.keyword) params.set('keywords', filter.keyword);
+  // 設備篩選分屬兩個參數：家電在 option、陽台/電梯/寵物/開伙在 other。
+  const facilities = filter.facilities || {};
+  if (facilities.option && facilities.option.length) params.set('option', facilities.option.join(','));
+  if (facilities.other && facilities.other.length) params.set('other', facilities.other.join(','));
   // 依刊登時間新到舊排序，這樣才能直接取「最新 N 筆」，不用每次把整批
   // 搜尋結果都掃過一輪。
   params.set('order', 'posttime');
@@ -107,8 +113,23 @@ async function extractListings(page) {
       return false;
     }
 
-    // 圖片網址擷取：591 用懶載入，src 常常是 data: URI 佔位圖，真正的網址
-    // 在 data-src 等屬性；佔位圖雖然是非空字串，但不能當成「已經抓到」。
+    // 圖片網址擷取：591 用懶載入，src 常常是 data: URI 佔位圖或
+    // list-loading.gif 這種載入動畫，真正的網址在 data-src 等屬性。之前只
+    // 排除 data: URI，結果 src 上的 list-loading.gif（非空字串、不是 data:）
+    // 會被當成「已抓到」直接回傳，真正的 data-src 反而被跳過，導致存下來
+    // 的 cover 全是那張載入動畫（實測 state 檔裡確實一堆 list-loading.gif）。
+    // 另外 591 的圖片網址常是協定相對格式（//img1.591.com.tw/...），LINE 的
+    // image 元件只收 https://，所以在這裡就補成 https，避免被誤判成不合法。
+    function normalizeUrl(u) {
+      if (!u) return '';
+      const s = u.trim();
+      if (!s) return '';
+      if (s.startsWith('data:')) return '';
+      // 懶載入／無圖時的佔位圖，視同沒抓到，讓後面的 data-src 有機會勝出。
+      if (/list-loading|loading\.gif|blank\.|spacer|nophoto|no-photo|noimage|no-image/i.test(s)) return '';
+      if (s.startsWith('//')) return 'https:' + s;
+      return s;
+    }
     function pickImageUrl(img) {
       if (!img) return '';
       const candidates = [
@@ -118,12 +139,13 @@ async function extractListings(page) {
         img.getAttribute('data-lazy-src')
       ];
       for (const c of candidates) {
-        if (c && !c.startsWith('data:')) return c;
+        const url = normalizeUrl(c);
+        if (url) return url;
       }
       const srcset = img.getAttribute('srcset') || img.getAttribute('data-srcset');
       if (srcset) {
-        const first = srcset.split(',')[0].trim().split(' ')[0];
-        if (first && !first.startsWith('data:')) return first;
+        const first = normalizeUrl(srcset.split(',')[0].trim().split(' ')[0]);
+        if (first) return first;
       }
       return '';
     }
