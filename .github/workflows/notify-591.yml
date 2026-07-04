@@ -2,7 +2,11 @@ name: 591 租屋通知
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    # 避開整點/半點（:00、:30）這種最壅塞、最容易被 GitHub 丟掉的排程時段，
+    # 改在每小時的 :09 與 :39 觸發（一樣約每 30 分鐘一次）。GitHub 的排程本來
+    # 就是 best-effort、可能延遲或漏跑，錯開分鐘只是降低被丟掉的機率；要真正
+    # 穩定請另外用外部定時器（例如 cron-job.org）呼叫 workflow_dispatch。
+    - cron: '9,39 * * * *'
   workflow_dispatch: {}
 
 permissions:
