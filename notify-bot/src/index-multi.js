@@ -50,20 +50,22 @@ async function main() {
     anyDataChanged = true;
 
     for (const sub of group.subs) {
-      const seen = new Set(seenByUser[sub.userId] || []);
+      // 用 subKey（subId）當去重身分，這樣同一個人的多組不同條件各自獨立，
+      // 不會因為某組推過某物件、害另一組也不推。
+      const seen = new Set(seenByUser[sub.subKey] || []);
       const fresh = listings.filter(l => !seen.has(l.id));
       if (!fresh.length) {
-        console.log(`  - ${sub.userId}：沒有新物件`);
+        console.log(`  - ${sub.userId}(${sub.subKey})：沒有新物件`);
         continue;
       }
       try {
         await pushListingsToTarget(token, sub.userId, fresh);
         // 推播成功才記入已推紀錄（推失敗就下輪再試，不會漏）
-        seenByUser[sub.userId] = [...(seenByUser[sub.userId] || []), ...fresh.map(l => l.id)];
+        seenByUser[sub.subKey] = [...(seenByUser[sub.subKey] || []), ...fresh.map(l => l.id)];
         anyDataChanged = true;
-        console.log(`  - ${sub.userId}：推播 ${fresh.length} 筆 ✅`);
+        console.log(`  - ${sub.userId}(${sub.subKey})：推播 ${fresh.length} 筆 ✅`);
       } catch (e) {
-        console.error(`  - ${sub.userId}：推播失敗（下輪重試）:`, e.message);
+        console.error(`  - ${sub.userId}(${sub.subKey})：推播失敗（下輪重試）:`, e.message);
       }
     }
   }

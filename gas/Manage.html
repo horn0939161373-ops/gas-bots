@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, "Noto Sans TC", sans-serif; margin: 0; padding: 16px; background: #f1f5f9; color: #0f172a; }
+    .wrap { max-width: 520px; margin: 0 auto; }
+    h1 { font-size: 18px; margin: 0 0 12px; }
+    .item { background: #fff; border-radius: 12px; padding: 14px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    .name { font-weight: 700; font-size: 15px; }
+    .paused { color: #b45309; font-size: 12px; margin-left: 6px; }
+    .meta { color: #475569; font-size: 13px; margin: 6px 0 10px; line-height: 1.5; }
+    .acts { display: flex; gap: 8px; }
+    .acts a, .acts button { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 13px; border: 1px solid #cbd5e1; background: #fff; color: #0f172a; text-decoration: none; cursor: pointer; }
+    .acts .del { border-color: #fca5a5; color: #b91c1c; }
+    .add { display: block; text-align: center; padding: 13px; border-radius: 10px; background: #0F766E; color: #fff; font-weight: 700; text-decoration: none; margin-top: 8px; }
+    .empty { background: #fff; border-radius: 12px; padding: 24px; text-align: center; color: #64748b; }
+    .warn { background:#fef9c3; color:#854d0e; padding:10px; border-radius:8px; font-size:13px; margin-bottom:12px; display:none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>📋 我的 591 訂閱</h1>
+    <div id="nouid" class="warn">⚠️ 沒有帶到你的 LINE 身分，請從 LINE 官方帳號傳來的連結點進來。</div>
+    <div id="list"><p style="color:#64748b">載入中…</p></div>
+    <a class="add" id="addLink" href="#">➕ 新增一組條件</a>
+  </div>
+
+  <script>
+    var UID = '<?= uid ?>';
+    var FAC = { balcony:'陽台', elevator:'電梯', pet:'寵物', airConditioner:'冷氣', cooking:'開伙' };
+    document.getElementById('addLink').href = '?uid=' + encodeURIComponent(UID);
+    if (!UID) { document.getElementById('nouid').style.display = 'block'; document.getElementById('list').innerHTML = ''; }
+    else load();
+
+    function load() {
+      google.script.run.withSuccessHandler(render).withFailureHandler(function (e) {
+        document.getElementById('list').innerHTML = '<div class="empty">載入失敗：' + e.message + '</div>';
+      }).listMySubs(UID);
+    }
+
+    function render(subs) {
+      var box = document.getElementById('list');
+      if (!subs || !subs.length) { box.innerHTML = '<div class="empty">你還沒有任何訂閱，點下面新增一組。</div>'; return; }
+      box.innerHTML = '';
+      subs.forEach(function (s) {
+        var facs = Object.keys(FAC).filter(function (k) { return s[k]; }).map(function (k) { return FAC[k]; });
+        var price = (s.priceMin || 0) + '～' + (s.priceMax || '不限') + ' 元';
+        var div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML =
+          '<div class="name">' + esc(s.name || '(未命名)') + (s.enabled ? '' : '<span class="paused">已暫停</span>') + '</div>' +
+          '<div class="meta">' + esc(s.region || '') + ' ' + esc(s.district || '') + '<br>' +
+          price + '｜' + esc(s.roomType || '不限') + (s.keyword ? '｜關鍵字：' + esc(s.keyword) : '') +
+          (facs.length ? '<br>設備：' + facs.join('、') : '') + '</div>' +
+          '<div class="acts">' +
+          '<a href="?uid=' + enc(UID) + '&subId=' + enc(s.subId) + '">編輯</a>' +
+          '<button onclick="toggle(\'' + s.subId + '\',' + (s.enabled ? 'false' : 'true') + ')">' + (s.enabled ? '暫停' : '恢復') + '</button>' +
+          '<button class="del" onclick="del(\'' + s.subId + '\')">刪除</button>' +
+          '</div>';
+        box.appendChild(div);
+      });
+    }
+
+    function del(subId) {
+      if (!confirm('確定刪除這組訂閱？')) return;
+      google.script.run.withSuccessHandler(load).withFailureHandler(alertErr).deleteSub(subId, UID);
+    }
+    function toggle(subId, enabled) {
+      google.script.run.withSuccessHandler(load).withFailureHandler(alertErr).setEnabled(subId, UID, enabled);
+    }
+    function alertErr(e) { alert('操作失敗：' + e.message); }
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]; }); }
+    function enc(s) { return encodeURIComponent(s); }
+  </script>
+</body>
+</html>
