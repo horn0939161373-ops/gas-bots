@@ -53,10 +53,18 @@ repo → Settings → Secrets and variables → Actions → 新增：
 2. 停用單人版 `notify-591.yml`（避免對你自己重複推播、也避免雙倍 Actions 額度）：
    在 GitHub Actions 頁面把該 workflow「Disable」，或把它的 `schedule` 註解掉。
 
+## 功能
+- **一人多組**：同一個人可存多組不同條件（每列一組，`subId` 唯一）。
+- **縣市→行政區勾選**：選縣市後自動帶出行政區 checkbox（目前只有高雄有代碼表，
+  其他縣市退回手動輸入名稱或 591 代碼）。要新增其他縣市，在 `Code.gs` 的
+  `DISTRICTS_BY_REGION` 加一個城市的 `[名稱, section代碼]` 陣列即可。
+- **管理頁**：`?action=manage&uid=` 可查看/編輯/暫停/刪除自己的訂閱；加好友時
+  bot 會同時回「新增」與「管理」兩個連結。
+
 ## 資料格式
-`subscriptions` 工作表每列一位使用者，欄位：
-`userId, name, region, district, priceMin, priceMax, roomType, keyword, maxResults, balcony, elevator, pet, airConditioner, cooking, enabled, updatedAt`
+`subscriptions` 工作表每列一組訂閱，欄位：
+`subId, userId, name, region, district, priceMin, priceMax, roomType, keyword, maxResults, balcony, elevator, pet, airConditioner, cooking, enabled, updatedAt`
 
 GitHub Actions 透過 `SUBSCRIPTIONS_URL`（`?action=list&token=`）讀這份清單，
-把相同搜尋條件的人歸成一組、同條件只抓一次，再依每人條件與各自的已推紀錄
-（`notify-bot/state/subscribers-seen.json`）推播。
+把相同搜尋條件的訂閱歸成一組、同條件只抓一次，再依每組條件與各自的已推紀錄
+（`notify-bot/state/subscribers-seen.json`，用 `subId` 當 key）推播。

@@ -8,12 +8,15 @@
     .card { max-width: 520px; margin: 0 auto; background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
     h1 { font-size: 18px; margin: 0 0 4px; }
     p.sub { margin: 0 0 16px; color: #64748b; font-size: 13px; }
+    a.manage { font-size: 13px; color: #0F766E; }
     label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 4px; }
     input[type=text], input[type=number], select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; }
     .row { display: flex; gap: 10px; }
     .row > div { flex: 1; }
     .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
     .checks label { display: flex; align-items: center; gap: 6px; font-weight: 400; margin: 0; }
+    #districtArea .checks { grid-template-columns: 1fr 1fr 1fr; }
+    .hint { font-size: 12px; color: #64748b; margin-top: 4px; }
     button { width: 100%; margin-top: 20px; padding: 13px; border: 0; border-radius: 10px; background: #0F766E; color: #fff; font-size: 16px; font-weight: 700; }
     button:disabled { opacity: .5; }
     .msg { margin-top: 12px; padding: 10px; border-radius: 8px; font-size: 14px; display: none; }
@@ -24,34 +27,22 @@
 </head>
 <body>
   <div class="card">
-    <h1>🏠 591 租屋通知設定</h1>
-    <p class="sub">選好條件後，有符合的新物件就會推播到你的 LINE。</p>
+    <h1 id="title">🏠 新增租屋通知條件</h1>
+    <p class="sub">選好條件後，有符合的新物件就會推播到你的 LINE。<a class="manage" id="manageLink" href="#">查看我的訂閱 →</a></p>
     <div id="nouid" class="warn">⚠️ 沒有帶到你的 LINE 身分，請從 LINE 官方帳號傳來的連結點進來設定。</div>
 
     <label>暱稱（自己看的，可留空）</label>
-    <input type="text" id="name" placeholder="例如：我自己">
+    <input type="text" id="name" placeholder="例如：中山大學附近">
 
     <label>縣市</label>
-    <select id="region">
-      <option>台北市</option><option>新北市</option><option>基隆市</option><option>桃園市</option>
-      <option>新竹市</option><option>新竹縣</option><option>苗栗縣</option><option>台中市</option>
-      <option>彰化縣</option><option>南投縣</option><option>雲林縣</option><option>嘉義市</option>
-      <option>嘉義縣</option><option>台南市</option><option selected>高雄市</option><option>屏東縣</option>
-      <option>宜蘭縣</option><option>花蓮縣</option><option>台東縣</option><option>澎湖縣</option><option>金門縣</option>
-    </select>
+    <select id="region" onchange="renderDistricts()"></select>
 
-    <label>行政區（可多個，用逗號分隔；高雄市已支援中文，其他縣市請填代碼）</label>
-    <input type="text" id="district" placeholder="例如：鼓山區,前金區,鹽埕區">
+    <label>行政區</label>
+    <div id="districtArea"></div>
 
     <div class="row">
-      <div>
-        <label>租金下限</label>
-        <input type="number" id="priceMin" value="5000" min="0" step="1000">
-      </div>
-      <div>
-        <label>租金上限</label>
-        <input type="number" id="priceMax" value="15000" min="0" step="1000">
-      </div>
+      <div><label>租金下限</label><input type="number" id="priceMin" value="5000" step="1000"></div>
+      <div><label>租金上限</label><input type="number" id="priceMax" value="15000" step="1000"></div>
     </div>
 
     <label>房型</label>
@@ -78,23 +69,74 @@
 
   <script>
     var UID = '<?= uid ?>';
+    var SUBID = '<?= subId ?>';
+    var DISTRICTS = JSON.parse('<?= districtsJson ?>');
+    var SUB = JSON.parse('<?= subJson ?>');
+    var REGIONS = ['台北市','新北市','基隆市','桃園市','新竹市','新竹縣','苗栗縣','台中市','彰化縣','南投縣','雲林縣','嘉義市','嘉義縣','台南市','高雄市','屏東縣','宜蘭縣','花蓮縣','台東縣','澎湖縣','金門縣'];
+
     if (!UID) document.getElementById('nouid').style.display = 'block';
+    document.getElementById('manageLink').href = '?action=manage&uid=' + encodeURIComponent(UID);
+    if (SUBID) { document.getElementById('title').textContent = '✏️ 編輯租屋通知條件'; }
+
+    // 縣市下拉
+    var regSel = document.getElementById('region');
+    REGIONS.forEach(function (r) {
+      var o = document.createElement('option'); o.textContent = r; regSel.appendChild(o);
+    });
+
+    // 編輯模式：預填基本欄位
+    if (SUB) {
+      set('name', SUB.name); set('priceMin', SUB.priceMin); set('priceMax', SUB.priceMax);
+      set('keyword', SUB.keyword); regSel.value = SUB.region || '高雄市';
+      document.getElementById('roomType').value = SUB.roomType || '不限';
+      ['balcony','elevator','pet','airConditioner','cooking'].forEach(function (k) {
+        document.getElementById(k).checked = !!SUB[k];
+      });
+    } else {
+      regSel.value = '高雄市';
+    }
+    renderDistricts();
+
+    // 依縣市渲染行政區：有代碼表 → 勾選清單；沒有 → 手動輸入
+    function renderDistricts() {
+      var region = regSel.value;
+      var area = document.getElementById('districtArea');
+      var list = DISTRICTS[region];
+      var pre = SUB ? String(SUB.district || '') : '';
+      var preParts = pre.split(/[,，、\s]+/).filter(Boolean);
+      if (list) {
+        var html = '<div class="checks">';
+        list.forEach(function (d) {
+          var name = d[0], code = String(d[1]);
+          var checked = preParts.indexOf(code) >= 0 || preParts.indexOf(name) >= 0 ? 'checked' : '';
+          html += '<label><input type="checkbox" class="distchk" value="' + code + '" ' + checked + '>' + name + '</label>';
+        });
+        html += '</div><div class="hint">可複選；不選代表整個縣市都搜尋。</div>';
+        area.innerHTML = html;
+      } else {
+        area.innerHTML = '<input type="text" id="districtText" placeholder="輸入行政區名稱或 591 代碼，逗號分隔（此縣市尚未建代碼表）" value="' + pre.replace(/"/g,'&quot;') + '"><div class="hint">這個縣市還沒有點選清單，請手動輸入；留空代表整個縣市。</div>';
+      }
+    }
+
+    function collectDistrict() {
+      var chks = document.querySelectorAll('.distchk:checked');
+      if (chks.length || document.querySelectorAll('.distchk').length) {
+        return Array.prototype.map.call(chks, function (c) { return c.value; }).join(',');
+      }
+      var tx = document.getElementById('districtText');
+      return tx ? tx.value.trim() : '';
+    }
 
     function save() {
-      var btn = document.getElementById('save');
-      var msg = document.getElementById('msg');
+      var btn = document.getElementById('save'), msg = document.getElementById('msg');
       msg.className = 'msg';
       if (!UID) { msg.className = 'msg err'; msg.textContent = '缺少 LINE 身分，無法儲存。'; return; }
       btn.disabled = true; btn.textContent = '儲存中…';
       var data = {
-        userId: UID,
-        name: val('name'),
-        region: val('region'),
-        district: val('district'),
-        priceMin: val('priceMin'),
-        priceMax: val('priceMax'),
-        roomType: val('roomType'),
-        keyword: val('keyword'),
+        userId: UID, subId: SUBID || '',
+        name: val('name'), region: regSel.value, district: collectDistrict(),
+        priceMin: val('priceMin'), priceMax: val('priceMax'),
+        roomType: document.getElementById('roomType').value, keyword: val('keyword'),
         balcony: chk('balcony'), elevator: chk('elevator'), pet: chk('pet'),
         airConditioner: chk('airConditioner'), cooking: chk('cooking')
       };
@@ -111,6 +153,7 @@
     }
     function val(id) { return document.getElementById(id).value; }
     function chk(id) { return document.getElementById(id).checked; }
+    function set(id, v) { if (v !== undefined && v !== null) document.getElementById(id).value = v; }
   </script>
 </body>
 </html>

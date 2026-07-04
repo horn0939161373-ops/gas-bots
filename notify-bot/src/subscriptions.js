@@ -16,7 +16,11 @@ function normalize(data) {
     ? data
     : (data && Array.isArray(data.subscriptions) ? data.subscriptions : []);
   // 只留有 userId、且沒有被停用的訂閱
-  return arr.filter(s => s && s.userId && s.enabled !== false);
+  return arr
+    .filter(s => s && s.userId && s.enabled !== false)
+    // 一人可有多組條件：每組用 subId 當獨立身分（各自去重）；沒有 subId
+    // 的舊資料退回用 userId 當 key。
+    .map(s => Object.assign({}, s, { subKey: String(s.subId || s.userId) }));
 }
 
 async function loadSubscriptions() {
