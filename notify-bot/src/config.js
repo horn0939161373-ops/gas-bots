@@ -20,25 +20,36 @@ const ROOM_TYPE_MAP = {
 // 取得代碼）再補進來；也可以直接在 config.json 的 district 欄位填數字代碼。
 const SECTION_MAP = {
   '17': { // 高雄市
-    '新興區': 243, '苓雅區': 245, '鼓山區': 247, '前鎮區': 249,
-    '三民區': 250, '楠梓區': 251, '左營區': 253, '鳳山區': 268
+    '新興區': 243, '前金區': 244, '苓雅區': 245, '鹽埕區': 246, '鼓山區': 247,
+    '前鎮區': 249, '三民區': 250, '楠梓區': 251, '左營區': 253, '鳳山區': 268
   }
 };
 
-function resolveDistrict(regionCode, name) {
-  if (!name) return '';
+// 把單一行政區名稱（或數字代碼）轉成 591 的 section 代碼。查無則回傳 ''。
+function resolveOneDistrict(regionCode, name) {
   const trimmed = String(name).trim();
+  if (!trimmed) return '';
   if (/^\d+$/.test(trimmed)) return trimmed; // 允許直接填數字代碼
   const districts = SECTION_MAP[regionCode];
   if (!districts) {
-    console.log(`⚠️ 目前還沒有這個縣市（region=${regionCode}）的行政區代碼表，「${name}」將被忽略，只用縣市層級搜尋。`);
+    console.log(`⚠️ 目前還沒有這個縣市（region=${regionCode}）的行政區代碼表，「${trimmed}」將被忽略，只用縣市層級搜尋。`);
     return '';
   }
   if (districts[trimmed] != null) return String(districts[trimmed]);
   const key = Object.keys(districts).find(k => trimmed.includes(k));
   if (key) return String(districts[key]);
-  console.log(`⚠️ 無法辨識行政區「${name}」，請對照 notify-bot/README.md 的行政區代碼表。`);
+  console.log(`⚠️ 無法辨識行政區「${trimmed}」，請對照 notify-bot/README.md 的行政區代碼表。`);
   return '';
+}
+
+// 支援一次填多個行政區（591 的 section 參數可用逗號串多個），可用半形或
+// 全形逗號、頓號、空白分隔，例如 "鼓山區,前金區,鹽埕區"。回傳以逗號串起
+// 的 section 代碼字串。
+function resolveDistrict(regionCode, name) {
+  if (!name) return '';
+  const parts = String(name).split(/[,，、\s]+/).map(s => s.trim()).filter(Boolean);
+  const codes = parts.map(p => resolveOneDistrict(regionCode, p)).filter(Boolean);
+  return codes.join(',');
 }
 
 // 設備 boolean 欄位 → 591 篩選代碼。注意：591 把設備拆成「兩個不同的

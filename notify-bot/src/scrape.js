@@ -218,67 +218,6 @@ async function extractListings(page) {
   });
 }
 
-// 把瀏覽器 DevTools 複製出來的整串 Cookie（"a=b; c=d; ..."）轉成 Playwright
-// context.addCookies() 需要的物件陣列。預設綁在 .591.com.tw 網域下。
-function parseCookieString(cookieStr, domain = '.591.com.tw') {
-  if (!cookieStr) return [];
-  return cookieStr.split(';').map(s => s.trim()).filter(Boolean).map(pair => {
-    const i = pair.indexOf('=');
-    if (i < 0) return null;
-    const name = pair.slice(0, i).trim();
-    const value = pair.slice(i + 1).trim();
-    if (!name) return null;
-    return { name, value, domain, path: '/' };
-  }).filter(Boolean);
-}
-
-/**
- * 探測「需要登入才看得到」的頁面（例如 591 會員中心的訂閱新物件列表）。
- * 帶入使用者從自己瀏覽器複製、存在 GitHub Secret 裡的 Cookie，跳過帳密
- * 登入這關（從 Actions 機房 IP 直接打帳密登入通常會被驗證碼擋）。只讀取、
- * 回傳擷取到的物件與一份判斷「是否真的登入成功」的中繼資訊，不推播、不
- * 寫任何狀態。這是驗證「登入讀訂閱」這條路可不可行的探針。
- */
-async function probeSubscription(url, cookieString) {
-  const browser = await chromium.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
-  try {
-    const context = await browser.newContext({ userAgent: UA });
-    const cookies = parseCookieString(cookieString);
-    if (cookies.length) await context.addCookies(cookies);
-    const page = await context.newPage();
-    const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-    await page.waitForTimeout(2500); // 等頁面 JS 解密渲染
-    await page.evaluate(async () => {
-      for (let i = 0; i < 10; i++) {
-        window.scrollBy(0, window.innerHeight);
-        await new Promise(resolve => setTimeout(resolve, 300));
-      }
-      window.scrollTo(0, 0);
-    });
-    await page.waitForTimeout(500);
-
-    const items = await extractListings(page);
-    const meta = await page.evaluate(() => {
-      const t = document.body ? document.body.innerText : '';
-      return {
-        title: document.title,
-        finalUrl: location.href, // 沒登入時 591 常會轉址到登入頁，看這個就知道
-        loginHints: {
-          hasLogout: /登出/.test(t),
-          hasMemberWords: /會員中心|我的租屋|訂閱|追蹤/.test(t),
-          asksLogin: /會員登入|請先登入|登入享有/.test(t)
-        },
-        bodySnippet: t.replace(/\s+/g, ' ').trim().slice(0, 500),
-        anchorCount: document.querySelectorAll('a[href]').length
-      };
-    });
-
-    return { statusCode: response ? response.status() : 0, cookiesInjected: cookies.length, meta, items };
-  } finally {
-    await browser.close();
-  }
-}
-
 /**
  * 591 的防護會不定期把某些 GitHub Actions 出口 IP 列入黑名單（實測發現
  * 同一個 workflow 不同次執行、拿到不同 IP 時，結果會在「完全被擋」跟
@@ -473,4 +412,4 @@ async function scrapeListings(filter) {
   return [];
 }
 
-module.exports = { scrapeListings, buildListUrl, probeSubscription, parseCookieString };
+module.exports = { scrapeListings, buildListUrl };
