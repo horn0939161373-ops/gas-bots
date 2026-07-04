@@ -1,0 +1,59 @@
+name: 591 訂閱探測
+
+# 手動觸發用：驗證「帶 Cookie 讀 591 訂閱頁」可不可行。
+# 只讀取、把結果寫進 state/subscription-probe.json，不推播、不動 seen 紀錄。
+on:
+  workflow_dispatch:
+    inputs:
+      subscription_url:
+        description: '你的 591 訂閱頁網址（登入後從瀏覽器網址列複製）'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: subscription-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: notify-bot
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('notify-bot/package-lock.json') }}
+
+      - name: Install Playwright Chromium
+        working-directory: notify-bot
+        run: npx playwright install --with-deps chromium
+
+      - name: Run subscription probe
+        working-directory: notify-bot
+        env:
+          RENT591_COOKIE: ${{ secrets.RENT591_COOKIE }}
+          SUBSCRIPTION_URL: ${{ inputs.subscription_url }}
+        run: node src/subscription-probe.js
+
+      - name: Commit probe result
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add notify-bot/state/subscription-probe.json
+          git diff --cached --quiet || git commit -m "chore: 訂閱探測結果 [skip ci]"
+          git push
