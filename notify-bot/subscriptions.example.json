@@ -1,0 +1,45 @@
+[
+  {
+    "userId": "U11111111111111111111111111111111",
+    "name": "我自己",
+    "region": "高雄市",
+    "district": "鼓山區,前金區,鹽埕區",
+    "priceMin": 5000,
+    "priceMax": 15000,
+    "roomType": "不限",
+    "keyword": "",
+    "maxResults": 10,
+    "balcony": true,
+    "elevator": false,
+    "pet": false,
+    "airConditioner": false,
+    "cooking": false,
+    "enabled": true
+  },
+  {
+    "userId": "U22222222222222222222222222222222",
+    "name": "朋友A（同條件，會跟我共用一次抓取）",
+    "region": "高雄市",
+    "district": "鼓山區,前金區,鹽埕區",
+    "priceMin": 5000,
+    "priceMax": 15000,
+    "roomType": "不限",
+    "keyword": "",
+    "maxResults": 10,
+    "balcony": true,
+    "enabled": true
+  },
+  {
+    "userId": "U33333333333333333333333333333333",
+    "name": "朋友B（不同條件：台北、要電梯）",
+    "region": "台北市",
+    "district": "",
+    "priceMin": 10000,
+    "priceMax": 25000,
+    "roomType": "獨立套房",
+    "keyword": "捷運",
+    "maxResults": 10,
+    "elevator": true,
+    "enabled": true
+  }
+]
