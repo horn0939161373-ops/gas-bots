@@ -56,4 +56,28 @@ function saveListingsData(path, listings, existing) {
   fs.writeFileSync(path, JSON.stringify(result, null, 2) + '\n');
 }
 
-module.exports = { loadSeenIds, saveSeenIds, loadListingsData, saveListingsData };
+// ── 多人版：每個 LINE 使用者各自一份已推紀錄 ──────────────────
+// 存成一個物件：{ userId: [已推過的物件 id, ...] }，用同一個檔集中管理，
+// Actions 每輪跑完 commit 回 repo。
+
+function loadSubscriberSeen(path) {
+  try {
+    const obj = JSON.parse(fs.readFileSync(path, 'utf8'));
+    return obj && typeof obj === 'object' && !Array.isArray(obj) ? obj : {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveSubscriberSeen(path, seenByUser) {
+  const out = {};
+  for (const [userId, ids] of Object.entries(seenByUser)) {
+    out[userId] = (Array.isArray(ids) ? ids : []).slice(-MAX_KEEP);
+  }
+  fs.writeFileSync(path, JSON.stringify(out, null, 2) + '\n');
+}
+
+module.exports = {
+  loadSeenIds, saveSeenIds, loadListingsData, saveListingsData,
+  loadSubscriberSeen, saveSubscriberSeen
+};

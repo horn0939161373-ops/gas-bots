@@ -75,25 +75,34 @@ async function sendPush(token, targetId, messages) {
   }
 }
 
-/** 推播所有新物件，不限制筆數（自動分批成多則 carousel / 多次 push） */
+// 把一批物件組成 flex carousel 訊息（自動分批：一則最多 10 bubble）。
+function buildCarouselMessages(items) {
+  const carouselGroups = chunk(items, MAX_BUBBLES_PER_CAROUSEL);
+  return carouselGroups.map((group, idx) => ({
+    type: 'flex',
+    altText: `🏠 新物件通知（第 ${idx + 1}/${carouselGroups.length} 批，共 ${items.length} 筆）`,
+    contents: { type: 'carousel', contents: group.map(buildBubble) }
+  }));
+}
+
+/** 推播一批物件給「指定的」LINE 對象（多人版用，一次 push 最多 5 則訊息） */
+async function pushListingsToTarget(token, targetId, items) {
+  if (!items.length) return;
+  const messages = buildCarouselMessages(items);
+  const pushBatches = chunk(messages, MAX_MESSAGES_PER_PUSH);
+  for (const batch of pushBatches) {
+    await sendPush(token, targetId, batch);
+  }
+}
+
+/** 單人版：推播給環境變數指定的預設對象（不限制筆數，自動分批） */
 async function pushNewListings(items) {
   const token = process.env.LINE_CHANNEL_ACCESS_TOKEN;
   const targetId = process.env.LINE_TARGET_ID;
   if (!token || !targetId) {
     throw new Error('尚未設定 LINE_CHANNEL_ACCESS_TOKEN 或 LINE_TARGET_ID 環境變數');
   }
-
-  const carouselGroups = chunk(items, MAX_BUBBLES_PER_CAROUSEL);
-  const carouselMessages = carouselGroups.map((group, idx) => ({
-    type: 'flex',
-    altText: `🏠 新物件通知（第 ${idx + 1}/${carouselGroups.length} 批，共 ${items.length} 筆）`,
-    contents: { type: 'carousel', contents: group.map(buildBubble) }
-  }));
-
-  const pushBatches = chunk(carouselMessages, MAX_MESSAGES_PER_PUSH);
-  for (const batch of pushBatches) {
-    await sendPush(token, targetId, batch);
-  }
+  await pushListingsToTarget(token, targetId, items);
 }
 
-module.exports = { pushNewListings };
+module.exports = { pushNewListings, pushListingsToTarget };

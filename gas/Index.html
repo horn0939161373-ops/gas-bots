@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, "Noto Sans TC", sans-serif; margin: 0; padding: 16px; background: #f1f5f9; color: #0f172a; }
+    .card { max-width: 520px; margin: 0 auto; background: #fff; border-radius: 14px; padding: 20px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+    h1 { font-size: 18px; margin: 0 0 4px; }
+    p.sub { margin: 0 0 16px; color: #64748b; font-size: 13px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 4px; }
+    input[type=text], input[type=number], select { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 15px; }
+    .row { display: flex; gap: 10px; }
+    .row > div { flex: 1; }
+    .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+    .checks label { display: flex; align-items: center; gap: 6px; font-weight: 400; margin: 0; }
+    button { width: 100%; margin-top: 20px; padding: 13px; border: 0; border-radius: 10px; background: #0F766E; color: #fff; font-size: 16px; font-weight: 700; }
+    button:disabled { opacity: .5; }
+    .msg { margin-top: 12px; padding: 10px; border-radius: 8px; font-size: 14px; display: none; }
+    .msg.ok { background: #dcfce7; color: #166534; display: block; }
+    .msg.err { background: #fee2e2; color: #991b1b; display: block; }
+    .warn { background:#fef9c3; color:#854d0e; padding:10px; border-radius:8px; font-size:13px; margin-bottom:12px; display:none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🏠 591 租屋通知設定</h1>
+    <p class="sub">選好條件後，有符合的新物件就會推播到你的 LINE。</p>
+    <div id="nouid" class="warn">⚠️ 沒有帶到你的 LINE 身分，請從 LINE 官方帳號傳來的連結點進來設定。</div>
+
+    <label>暱稱（自己看的，可留空）</label>
+    <input type="text" id="name" placeholder="例如：我自己">
+
+    <label>縣市</label>
+    <select id="region">
+      <option>台北市</option><option>新北市</option><option>基隆市</option><option>桃園市</option>
+      <option>新竹市</option><option>新竹縣</option><option>苗栗縣</option><option>台中市</option>
+      <option>彰化縣</option><option>南投縣</option><option>雲林縣</option><option>嘉義市</option>
+      <option>嘉義縣</option><option>台南市</option><option selected>高雄市</option><option>屏東縣</option>
+      <option>宜蘭縣</option><option>花蓮縣</option><option>台東縣</option><option>澎湖縣</option><option>金門縣</option>
+    </select>
+
+    <label>行政區（可多個，用逗號分隔；高雄市已支援中文，其他縣市請填代碼）</label>
+    <input type="text" id="district" placeholder="例如：鼓山區,前金區,鹽埕區">
+
+    <div class="row">
+      <div>
+        <label>租金下限</label>
+        <input type="number" id="priceMin" value="5000" min="0" step="1000">
+      </div>
+      <div>
+        <label>租金上限</label>
+        <input type="number" id="priceMax" value="15000" min="0" step="1000">
+      </div>
+    </div>
+
+    <label>房型</label>
+    <select id="roomType">
+      <option>不限</option><option>整層住家</option><option>獨立套房</option>
+      <option>分租套房</option><option>雅房</option><option>別墅</option>
+    </select>
+
+    <label>關鍵字（可留空）</label>
+    <input type="text" id="keyword" placeholder="例如：近捷運">
+
+    <label>設備需求</label>
+    <div class="checks">
+      <label><input type="checkbox" id="balcony">陽台</label>
+      <label><input type="checkbox" id="elevator">電梯</label>
+      <label><input type="checkbox" id="pet">可養寵物</label>
+      <label><input type="checkbox" id="airConditioner">冷氣</label>
+      <label><input type="checkbox" id="cooking">可開伙</label>
+    </div>
+
+    <button id="save" onclick="save()">儲存我的訂閱</button>
+    <div id="msg" class="msg"></div>
+  </div>
+
+  <script>
+    var UID = '<?= uid ?>';
+    if (!UID) document.getElementById('nouid').style.display = 'block';
+
+    function save() {
+      var btn = document.getElementById('save');
+      var msg = document.getElementById('msg');
+      msg.className = 'msg';
+      if (!UID) { msg.className = 'msg err'; msg.textContent = '缺少 LINE 身分，無法儲存。'; return; }
+      btn.disabled = true; btn.textContent = '儲存中…';
+      var data = {
+        userId: UID,
+        name: val('name'),
+        region: val('region'),
+        district: val('district'),
+        priceMin: val('priceMin'),
+        priceMax: val('priceMax'),
+        roomType: val('roomType'),
+        keyword: val('keyword'),
+        balcony: chk('balcony'), elevator: chk('elevator'), pet: chk('pet'),
+        airConditioner: chk('airConditioner'), cooking: chk('cooking')
+      };
+      google.script.run
+        .withSuccessHandler(function () {
+          btn.disabled = false; btn.textContent = '儲存我的訂閱';
+          msg.className = 'msg ok'; msg.textContent = '✅ 已儲存！有符合的新物件就會推播給你。';
+        })
+        .withFailureHandler(function (e) {
+          btn.disabled = false; btn.textContent = '儲存我的訂閱';
+          msg.className = 'msg err'; msg.textContent = '儲存失敗：' + e.message;
+        })
+        .saveSubscription(data);
+    }
+    function val(id) { return document.getElementById(id).value; }
+    function chk(id) { return document.getElementById(id).checked; }
+  </script>
+</body>
+</html>

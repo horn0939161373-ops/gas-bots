@@ -1,0 +1,58 @@
+name: 591 租屋通知（多人版）
+
+# 多人版：讀 GAS 提供的訂閱清單，依每個人的條件各自推播。
+# 一開始只開放手動觸發（workflow_dispatch），確認能跑、不會誤推之後，再把
+# 下面的 schedule 取消註解啟用，並視情況停用單人版 notify-591.yml 以免重複
+# 推播與吃掉雙倍 Actions 額度。
+on:
+  workflow_dispatch: {}
+  # schedule:
+  #   - cron: '13,43 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: notify-591-multi
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: notify-bot
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('notify-bot/package-lock.json') }}
+
+      - name: Install Playwright Chromium
+        working-directory: notify-bot
+        run: npx playwright install --with-deps chromium
+
+      - name: Run multi-user notify script
+        working-directory: notify-bot
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          SUBSCRIPTIONS_URL: ${{ secrets.SUBSCRIPTIONS_URL }}
+        run: node src/index-multi.js
+
+      - name: Commit updated state
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add notify-bot/state/subscribers-seen.json notify-bot/state/listings-data.json
+          git diff --cached --quiet || git commit -m "chore: 更新多人版已推紀錄 [skip ci]"
+          git push
