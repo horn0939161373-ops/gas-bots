@@ -20,34 +20,48 @@ const ROOM_TYPE_MAP = {
 // 取得代碼）再補進來；也可以直接在 config.json 的 district 欄位填數字代碼。
 const SECTION_MAP = {
   '17': { // 高雄市
-    '新興區': 243, '苓雅區': 245, '鼓山區': 247, '前鎮區': 249,
-    '三民區': 250, '楠梓區': 251, '左營區': 253, '鳳山區': 268
+    '新興區': 243, '前金區': 244, '苓雅區': 245, '鹽埕區': 246, '鼓山區': 247,
+    '前鎮區': 249, '三民區': 250, '楠梓區': 251, '左營區': 253, '鳳山區': 268
   }
 };
 
-function resolveDistrict(regionCode, name) {
-  if (!name) return '';
+// 把單一行政區名稱（或數字代碼）轉成 591 的 section 代碼。查無則回傳 ''。
+function resolveOneDistrict(regionCode, name) {
   const trimmed = String(name).trim();
+  if (!trimmed) return '';
   if (/^\d+$/.test(trimmed)) return trimmed; // 允許直接填數字代碼
   const districts = SECTION_MAP[regionCode];
   if (!districts) {
-    console.log(`⚠️ 目前還沒有這個縣市（region=${regionCode}）的行政區代碼表，「${name}」將被忽略，只用縣市層級搜尋。`);
+    console.log(`⚠️ 目前還沒有這個縣市（region=${regionCode}）的行政區代碼表，「${trimmed}」將被忽略，只用縣市層級搜尋。`);
     return '';
   }
   if (districts[trimmed] != null) return String(districts[trimmed]);
   const key = Object.keys(districts).find(k => trimmed.includes(k));
   if (key) return String(districts[key]);
-  console.log(`⚠️ 無法辨識行政區「${name}」，請對照 notify-bot/README.md 的行政區代碼表。`);
+  console.log(`⚠️ 無法辨識行政區「${trimmed}」，請對照 notify-bot/README.md 的行政區代碼表。`);
   return '';
 }
 
-// 設備 boolean 欄位 → 591 option 參數代碼
+// 支援一次填多個行政區（591 的 section 參數可用逗號串多個），可用半形或
+// 全形逗號、頓號、空白分隔，例如 "鼓山區,前金區,鹽埕區"。回傳以逗號串起
+// 的 section 代碼字串。
+function resolveDistrict(regionCode, name) {
+  if (!name) return '';
+  const parts = String(name).split(/[,，、\s]+/).map(s => s.trim()).filter(Boolean);
+  const codes = parts.map(p => resolveOneDistrict(regionCode, p)).filter(Boolean);
+  return codes.join(',');
+}
+
+// 設備 boolean 欄位 → 591 篩選代碼。注意：591 把設備拆成「兩個不同的
+// 網址參數」——冷氣等家電屬於 option，陽台/電梯/寵物/開伙屬於 other。
+// 之前全部塞進 option，結果 591 只認得冷氣（cold），陽台/電梯/寵物/開伙
+// 四項篩選其實完全沒生效，所以這裡記下每個欄位對應的參數群組。
 const FACILITY_FIELD_MAP = {
-  balcony: 'balcony_1',
-  elevator: 'lift',
-  pet: 'pet',
-  airConditioner: 'cold',
-  cooking: 'cook'
+  balcony: { param: 'other', value: 'balcony_1' },
+  elevator: { param: 'other', value: 'lift' },
+  pet: { param: 'other', value: 'pet' },
+  airConditioner: { param: 'option', value: 'cold' },
+  cooking: { param: 'other', value: 'cook' }
 };
 
 function resolveRegion(name) {
@@ -72,9 +86,14 @@ function resolveRoomType(name) {
 
 /** 把 config.json 讀到的物件轉成 scrapeListings() 需要的 filter 格式 */
 function resolveConfig(config) {
-  const facilities = Object.keys(FACILITY_FIELD_MAP)
-    .filter(field => config[field] === true)
-    .map(field => FACILITY_FIELD_MAP[field]);
+  // 依 591 的參數群組分別收集：option（家電）與 other（陽台/電梯等）。
+  const facilities = { option: [], other: [] };
+  for (const field of Object.keys(FACILITY_FIELD_MAP)) {
+    if (config[field] === true) {
+      const { param, value } = FACILITY_FIELD_MAP[field];
+      facilities[param].push(value);
+    }
+  }
 
   const region = resolveRegion(config.region);
 
