@@ -6,8 +6,8 @@ name: 591 租屋通知（多人版）
 # 推播與吃掉雙倍 Actions 額度。
 on:
   workflow_dispatch: {}
-  # schedule:
-  #   - cron: '13,43 * * * *'
+  schedule:
+    - cron: '13,43 * * * *'
 
 permissions:
   contents: write
