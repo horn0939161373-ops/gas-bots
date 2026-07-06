@@ -15,7 +15,8 @@
  */
 function trigger591() {
   var pat = PropertiesService.getScriptProperties().getProperty('GITHUB_PAT');
-  var url = 'https://api.github.com/repos/horn0939161373-ops/gas-bots/actions/workflows/notify-591.yml/dispatches';
+  // 多人版（讀試算表訂閱、各自推播）。若只想跑單人版，改成 notify-591.yml。
+  var url = 'https://api.github.com/repos/horn0939161373-ops/gas-bots/actions/workflows/notify-591-multi.yml/dispatches';
   var res = UrlFetchApp.fetch(url, {
     method: 'post',
     contentType: 'application/json',
