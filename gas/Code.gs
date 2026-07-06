@@ -13,7 +13,9 @@
  * 指令碼屬性（專案設定 → 指令碼屬性）：
  *   LINE_CHANNEL_ACCESS_TOKEN  LINE OA channel access token（回覆用）
  *   API_TOKEN                  自訂隨機字串，Actions 讀清單時要帶
- *   SPREADSHEET_ID             存訂閱的試算表 ID
+ *   SPREADSHEET_ID             （選填）存訂閱的試算表 ID；用「試算表 擴充功能
+ *                              → Apps Script」建立的綁定式指令碼可不填，會自動
+ *                              用綁定的那份試算表
  */
 
 var SHEET_NAME = 'subscriptions';
@@ -36,8 +38,17 @@ function prop(key) {
   return PropertiesService.getScriptProperties().getProperty(key);
 }
 
+// 取得試算表：有設 SPREADSHEET_ID 就用它（獨立式指令碼）；沒設就用「綁定
+// 的這份試算表」（從試算表 擴充功能 → Apps Script 建的容器綁定式指令碼）。
+function getSpreadsheet_() {
+  var id = prop('SPREADSHEET_ID');
+  var ss = id ? SpreadsheetApp.openById(id) : SpreadsheetApp.getActiveSpreadsheet();
+  if (!ss) throw new Error('找不到試算表：請用「試算表 擴充功能 → Apps Script」建立，或設定 SPREADSHEET_ID 指令碼屬性');
+  return ss;
+}
+
 function getSheet_() {
-  var ss = SpreadsheetApp.openById(prop('SPREADSHEET_ID'));
+  var ss = getSpreadsheet_();
   var sh = ss.getSheetByName(SHEET_NAME);
   if (!sh) {
     sh = ss.insertSheet(SHEET_NAME);
