@@ -18,13 +18,14 @@
 2. 記下它的 ID：網址 `.../spreadsheets/d/【ID】/edit`。
 
 ### B. 建 GAS 專案、貼程式
-1. script.google.com → 新增專案。
+建議直接從**試算表 擴充功能 → Apps Script**（綁定式，最省事，免設 `SPREADSHEET_ID`）：
+1. 在 A 的試算表點 **擴充功能 → Apps Script**。
 2. 把 `gas/Code.gs` 內容貼進預設的「程式碼.gs」。
-3. 左側 **+ → HTML**，命名 **`Index`**，貼入 `gas/Index.html`。
-4. 齒輪 **專案設定 → 指令碼屬性**，新增三個：
-   - `SPREADSHEET_ID` = A 的試算表 ID
+3. 左側 **+ → HTML**，命名 **`Index`**，貼入 `gas/Index.html`；再建 **`Manage`** 貼入 `gas/Manage.html`。
+4. 齒輪 **專案設定 → 指令碼屬性**，新增兩個：
    - `LINE_CHANNEL_ACCESS_TOKEN` = 你的 LINE OA channel access token
    - `API_TOKEN` = 自訂一串亂數（GitHub secret 要用同一串）
+   - （綁定式免設 `SPREADSHEET_ID`；獨立式指令碼才要加它 = A 的試算表 ID）
 
 ### C. 部署成 Web App
 1. 右上 **部署 → 新增部署作業 → 網頁應用程式**。
