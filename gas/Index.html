@@ -105,13 +105,19 @@
       var pre = SUB ? String(SUB.district || '') : '';
       var preParts = pre.split(/[,，、\s]+/).filter(Boolean);
       if (list) {
+        var known = {};
         var html = '<div class="checks">';
         list.forEach(function (d) {
           var name = d[0], code = String(d[1]);
+          known[code] = 1; known[name] = 1;
           var checked = preParts.indexOf(code) >= 0 || preParts.indexOf(name) >= 0 ? 'checked' : '';
           html += '<label><input type="checkbox" class="distchk" value="' + code + '" ' + checked + '>' + name + '</label>';
         });
-        html += '</div><div class="hint">可複選；不選代表整個縣市都搜尋。</div>';
+        html += '</div>';
+        // 清單沒列到的區（例如編輯時帶進來的、或這城市尚未補齊的），放進「其他」欄
+        var rest = preParts.filter(function (p) { return !known[p]; }).join(',');
+        html += '<input type="text" id="districtOther" placeholder="其他行政區（手動輸入 591 代碼，逗號分隔）" value="' + rest.replace(/"/g, '&quot;') + '" style="margin-top:8px">';
+        html += '<div class="hint">可複選；清單沒有的區用上面欄位補代碼；全部不填代表整個縣市。</div>';
         area.innerHTML = html;
       } else {
         area.innerHTML = '<input type="text" id="districtText" placeholder="輸入行政區名稱或 591 代碼，逗號分隔（此縣市尚未建代碼表）" value="' + pre.replace(/"/g,'&quot;') + '"><div class="hint">這個縣市還沒有點選清單，請手動輸入；留空代表整個縣市。</div>';
@@ -119,9 +125,14 @@
     }
 
     function collectDistrict() {
-      var chks = document.querySelectorAll('.distchk:checked');
-      if (chks.length || document.querySelectorAll('.distchk').length) {
-        return Array.prototype.map.call(chks, function (c) { return c.value; }).join(',');
+      if (document.querySelectorAll('.distchk').length) {
+        // 勾選城市：合併「勾選的代碼」＋「其他手動欄」
+        var codes = Array.prototype.map.call(document.querySelectorAll('.distchk:checked'), function (c) { return c.value; });
+        var other = document.getElementById('districtOther');
+        if (other && other.value.trim()) {
+          other.value.split(/[,，、\s]+/).forEach(function (p) { if (p.trim()) codes.push(p.trim()); });
+        }
+        return codes.join(',');
       }
       var tx = document.getElementById('districtText');
       return tx ? tx.value.trim() : '';
