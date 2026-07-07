@@ -27,10 +27,11 @@ function buildBubble(item) {
       type: 'box', layout: 'vertical', spacing: 'sm', paddingAll: 'md',
       contents: [
         { type: 'text', text: String(item.title || '未命名物件').slice(0, 200), weight: 'bold', size: 'sm', wrap: true },
+        ...(item.address ? [{ type: 'text', text: String(item.address).slice(0, 60), color: '#64748B', size: 'xs', wrap: true }] : []),
         {
           type: 'box', layout: 'horizontal',
           contents: [
-            { type: 'text', text: '租金', color: '#475569', size: 'xs', flex: 2 },
+            { type: 'text', text: item.refreshTime ? String(item.refreshTime).slice(0, 20) : '租金', color: '#475569', size: 'xs', flex: 5 },
             { type: 'text', text: `$${item.price}`, weight: 'bold', size: 'xs', align: 'end', color: '#DC2626', flex: 3 }
           ]
         }
