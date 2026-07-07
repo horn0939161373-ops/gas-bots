@@ -54,6 +54,36 @@ repo → Settings → Secrets and variables → Actions → 新增：
 2. 停用單人版 `notify-591.yml`（避免對你自己重複推播、也避免雙倍 Actions 額度）：
    在 GitHub Actions 頁面把該 workflow「Disable」，或把它的 `schedule` 註解掉。
 
+## 自動部署（repo 改動自動寫入 GAS，免手動貼程式）
+
+設定好之後，`gas/` 底下的檔案只要合併進 `main`，GitHub Actions（`.github/workflows/deploy-gas.yml`）
+就會自動用 [clasp](https://github.com/google/clasp) 推上你的 Apps Script 專案並更新 Web App 部署，
+**exec 網址不變**、LINE webhook 不用重設。
+
+一次性設定（綁你的 Google 帳號，只能本人操作；需要一台電腦，或用免安裝的
+[Google Cloud Shell](https://shell.cloud.google.com)）：
+
+1. 到 <https://script.google.com/home/usersettings> 開啟 **Google Apps Script API**。
+2. 在電腦或 Cloud Shell 執行：
+   ```
+   npm install -g @google/clasp
+   clasp login
+   ```
+   跑完後把 `~/.clasprc.json` 的**完整內容**複製起來（Cloud Shell 用 `cat ~/.clasprc.json`）。
+3. 取得兩個 ID：
+   - **指令碼 ID**：GAS 編輯器 → 齒輪「專案設定」→「指令碼 ID」
+   - **部署 ID**：GAS 編輯器 → 部署 → **管理部署作業** → 現用 Web App 部署的 ID（`AKfycb` 開頭）
+4. 到 repo **Settings → Secrets and variables → Actions** 新增三個 secret：
+
+   | Secret 名稱 | 值 |
+   |---|---|
+   | `CLASPRC_JSON` | 步驟 2 複製的 `~/.clasprc.json` 完整內容 |
+   | `GAS_SCRIPT_ID` | 指令碼 ID |
+   | `GAS_DEPLOYMENT_ID` | 部署 ID（不填就只更新程式碼、不換版本，exec 會繼續跑舊版） |
+
+⚠️ 啟用後 **repo 是唯一的真相來源**：要改 GAS 程式一律改 repo 裡的 `gas/*`，
+不要直接在 GAS 編輯器改，不然下次自動部署會把線上改動蓋掉。
+
 ## 功能
 - **一人多組**：同一個人可存多組不同條件（每列一組，`subId` 唯一）。
 - **縣市→行政區勾選**：選縣市後自動帶出行政區 checkbox。六都（台北完整 12 區、

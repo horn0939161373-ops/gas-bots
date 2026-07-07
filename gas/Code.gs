@@ -82,6 +82,11 @@ function getSheet_() {
   if (head.join(',') !== HEADERS.join(',')) {
     sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
   }
+  // district 欄一定要是「純文字」格式：不然「244,245,246,247」這種逗號
+  // 分隔的代碼會被試算表當成千分位數字轉成 244245246247，送給 591 就
+  // 查不到任何物件（實際發生過，通知因此完全中斷）。
+  var dCol = HEADERS.indexOf('district') + 1;
+  sh.getRange(1, dCol, sh.getMaxRows(), 1).setNumberFormat('@');
   return sh;
 }
 
@@ -161,12 +166,19 @@ function saveSubscription(data) {
     }
   }
   var subId = data.subId || Utilities.getUuid();
+  // 編輯既有訂閱時保留原本的 enabled 狀態：不然編輯一筆「已暫停」的訂閱
+  // 會被無聲地重新啟用。新訂閱才預設啟用。
+  var enabled = true;
+  if (rowIndex > 0) {
+    var prev = values[rowIndex - 1][HEADERS.indexOf('enabled')];
+    enabled = !(prev === false || prev === 'FALSE' || prev === 'false');
+  }
   var record = [
     subId, data.userId, data.name || '', data.region || '', data.district || '',
     Number(data.priceMin) || 0, Number(data.priceMax) || 0,
     data.roomType || '不限', data.keyword || '', Number(data.maxResults) || 10,
     !!data.balcony, !!data.elevator, !!data.pet, !!data.airConditioner, !!data.cooking,
-    true, new Date().toISOString()
+    enabled, new Date().toISOString()
   ];
   if (rowIndex > 0) {
     sh.getRange(rowIndex, 1, 1, record.length).setValues([record]);

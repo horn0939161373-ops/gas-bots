@@ -46,8 +46,22 @@ function resolveOneDistrict(regionCode, name) {
 // 全形逗號、頓號、空白分隔，例如 "鼓山區,前金區,鹽埕區"。回傳以逗號串起
 // 的 section 代碼字串。
 function resolveDistrict(regionCode, name) {
-  if (!name) return '';
-  const parts = String(name).split(/[,，、\s]+/).map(s => s.trim()).filter(Boolean);
+  if (name == null || name === '') return '';
+  let raw = String(name).trim();
+  // Google 試算表會把「244,245,246,247」這種逗號分隔的代碼字串當成
+  // 「千分位數字」自動轉成 244245246247，GAS 讀回來就是一長串數字，
+  // 直接當 section 送給 591 會查不到任何物件（實際發生過，通知因此
+  // 完全中斷）。千分位的分組固定是從右往左每 3 位一組，照同樣規則
+  // 切回來即可還原原本的代碼清單（591 的 section 代碼皆不超過 3 位數）。
+  if (/^\d{4,}$/.test(raw)) {
+    const parts = [];
+    let s = raw;
+    while (s.length > 3) { parts.unshift(s.slice(-3)); s = s.slice(0, -3); }
+    parts.unshift(s);
+    raw = parts.join(',');
+    console.log(`⚠️ district「${name}」疑似被試算表轉成數字，自動還原為「${raw}」`);
+  }
+  const parts = raw.split(/[,，、\s]+/).map(s => s.trim()).filter(Boolean);
   const codes = parts.map(p => resolveOneDistrict(regionCode, p)).filter(Boolean);
   return codes.join(',');
 }
