@@ -1,0 +1,37 @@
+name: 傾印 591 行政區代碼表
+
+# 維護用（手動觸發）：從 591 抓各縣市行政區的 section 代碼，結果印在
+# log 裡。用來更新 gas/Code.gs 的 DISTRICTS_BY_REGION 與
+# notify-bot/src/config.js 的 SECTION_MAP。
+
+on:
+  workflow_dispatch:
+    inputs:
+      regions:
+        description: 'region 代碼（逗號分隔，留空 = 六都）'
+        required: false
+        default: ''
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: notify-bot
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        working-directory: notify-bot
+        run: npx playwright install --with-deps chromium
+
+      - name: Dump districts
+        working-directory: notify-bot
+        run: node scripts/dump-districts.js "${{ github.event.inputs.regions }}"
