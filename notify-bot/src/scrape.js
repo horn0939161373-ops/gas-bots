@@ -51,6 +51,55 @@ function buildListUrl(filter) {
  */
 async function extractListings(page) {
   return page.evaluate(() => {
+    // ========================================================
+    // 優先路徑：直接讀 591 前端狀態裡「真正排序好的清單」
+    // ========================================================
+    // 實測發現 591 把搜尋結果放在 window.__NUXT__.pinia['rent-list'].dataList
+    // （已依網址的 order=posttime 排序、且已套用地區/價格/設備等篩選），另外把
+    // 「優選好屋／廣告」單獨放在 topDataList。之前照 DOM 順序抓，會先抓到頁面
+    // 頂端那 2 筆廣告（常是舊的、甚至重上架、還可能超出價格區間），把真正的
+    // 最新物件擠掉——這就是「常抓到舊的」的根本原因。直接讀 dataList 就能拿到
+    // 正確順序、乾淨資料，並自然排除廣告。讀不到才退回下面的 DOM 擷取法。
+    function readFromNuxt() {
+      var list = null;
+      try {
+        var rl = window.__NUXT__ && window.__NUXT__.pinia && window.__NUXT__.pinia['rent-list'];
+        if (rl && rl.dataList && Array.isArray(rl.dataList._value)) list = rl.dataList._value;
+      } catch (e) { /* ignore */ }
+      if (!list) {
+        // 後備：走訪 __NUXT__ 找第一個「元素帶 id 與 address」的陣列（即物件清單）
+        try {
+          var seen = new WeakSet();
+          (function walk(o, depth) {
+            if (list || !o || typeof o !== 'object' || depth > 8 || seen.has(o)) return;
+            seen.add(o);
+            if (Array.isArray(o) && o.length && o[0] && typeof o[0] === 'object' && 'id' in o[0] && 'address' in o[0]) { list = o; return; }
+            for (var k in o) { try { walk(o[k], depth + 1); } catch (e) {} if (list) return; }
+          })(window.__NUXT__, 0);
+        } catch (e) { /* ignore */ }
+      }
+      if (!list || !list.length) return null;
+      return list.map(function (it) {
+        var price = Number(String(it.price == null ? '' : it.price).replace(/[^\d]/g, '')) || 0;
+        var cover = it.cover || (Array.isArray(it.photoList) && it.photoList[0]) || '';
+        if (cover && cover.indexOf('//') === 0) cover = 'https:' + cover;
+        return {
+          id: String(it.id),
+          title: String(it.title || '').trim(),
+          price: price,
+          cover: cover,
+          url: it.url || ('https://rent.591.com.tw/' + it.id),
+          address: it.address || '',
+          refreshTime: it.refresh_time || ''
+        };
+      }).filter(function (x) { return x.id && x.price > 0; });
+    }
+    var fromNuxt = readFromNuxt();
+    if (fromNuxt && fromNuxt.length) return fromNuxt;
+
+    // ========================================================
+    // 後備路徑：從渲染完成的 DOM 擷取（讀不到 __NUXT__ 時才用）
+    // ========================================================
     // 591 頁面上除了主列表卡片，篩選欄/瀏覽紀錄等側邊小工具偶爾也會出現
     // 連到同一個物件 id 的連結。這些區塊本身可能剛好也有「class 帶
     // price」的元素（例如價格區間篩選下拉選單）跟裝飾用的小圖示，如果
