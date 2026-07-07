@@ -33,7 +33,7 @@
     var DISTRICTS = JSON.parse('<?= districtsJson ?>');
     var FAC = { balcony:'陽台', elevator:'電梯', pet:'寵物', airConditioner:'冷氣', cooking:'開伙' };
 
-    // 代碼 → 行政區名稱 的對照表（591 的 section 代碼全國不重複，摊平即可）
+    // 代碼 → 行政區名稱 的對照表（591 的 section 代碼全國不重複，攤平即可）
     var CODE_TO_NAME = {};
     Object.keys(DISTRICTS).forEach(function (region) {
       DISTRICTS[region].forEach(function (d) { CODE_TO_NAME[String(d[1])] = d[0]; });
