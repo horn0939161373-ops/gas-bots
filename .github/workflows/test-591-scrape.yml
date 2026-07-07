@@ -1,0 +1,31 @@
+name: Test 591 Scrape Connectivity
+
+# 暫時偗用這個已註冊的 workflow 路徑執行行政區傾印（分支上的新 workflow
+# 沒進 main 前無法用 API 觸發），拿到結果後會從分支移除。
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: notify-bot
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        working-directory: notify-bot
+        run: npx playwright install --with-deps chromium
+
+      - name: Dump districts
+        working-directory: notify-bot
+        run: node scripts/dump-districts.js
