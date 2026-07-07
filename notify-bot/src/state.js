@@ -36,6 +36,10 @@ function loadListingsData(path) {
  * 把這次抓到的物件完整資料（不只 id）合併寫回去，方便之後回顧「之前
  * 到底抓到了什麼」，而不是只有一串 id。同一物件重複抓到時用最新一次
  * 的資料覆蓋（例如價格可能會變動）。超過上限時，優先保留最近抓到的。
+ *
+ * 回傳合併後的結果；多人版一輪內會對「多組條件」各存一次，呼叫端要用
+ * 回傳值當下一次的 existing，否則後面那組會用迴圈開始前的舊資料當基底，
+ * 把前面那組剛存的物件洗掉。
  */
 function saveListingsData(path, listings, existing) {
   const merged = { ...existing };
@@ -54,6 +58,7 @@ function saveListingsData(path, listings, existing) {
   const trimmed = entries.slice(-MAX_KEEP);
   const result = Object.fromEntries(trimmed.map(item => [item.id, item]));
   fs.writeFileSync(path, JSON.stringify(result, null, 2) + '\n');
+  return result;
 }
 
 // ── 多人版：每個 LINE 使用者各自一份已推紀錄 ──────────────────

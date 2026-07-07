@@ -161,12 +161,19 @@ function saveSubscription(data) {
     }
   }
   var subId = data.subId || Utilities.getUuid();
+  // 編輯既有訂閱時保留原本的 enabled 狀態：不然編輯一筆「已暫停」的訂閱
+  // 會被無聲地重新啟用。新訂閱才預設啟用。
+  var enabled = true;
+  if (rowIndex > 0) {
+    var prev = values[rowIndex - 1][HEADERS.indexOf('enabled')];
+    enabled = !(prev === false || prev === 'FALSE' || prev === 'false');
+  }
   var record = [
     subId, data.userId, data.name || '', data.region || '', data.district || '',
     Number(data.priceMin) || 0, Number(data.priceMax) || 0,
     data.roomType || '不限', data.keyword || '', Number(data.maxResults) || 10,
     !!data.balcony, !!data.elevator, !!data.pet, !!data.airConditioner, !!data.cooking,
-    true, new Date().toISOString()
+    enabled, new Date().toISOString()
   ];
   if (rowIndex > 0) {
     sh.getRange(rowIndex, 1, 1, record.length).setValues([record]);

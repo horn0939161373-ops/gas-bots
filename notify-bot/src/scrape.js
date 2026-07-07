@@ -83,12 +83,18 @@ async function extractListings(page) {
         var price = Number(String(it.price == null ? '' : it.price).replace(/[^\d]/g, '')) || 0;
         var cover = it.cover || (Array.isArray(it.photoList) && it.photoList[0]) || '';
         if (cover && cover.indexOf('//') === 0) cover = 'https:' + cover;
+        // dataList 的 url 可能是協定相對（//...）或站內相對路徑（/123456），
+        // LINE 的按鈕只收完整 https 網址，這裡先補全；補不出來就用 id 組。
+        var url = String(it.url || '');
+        if (url.indexOf('//') === 0) url = 'https:' + url;
+        else if (url.charAt(0) === '/') url = 'https://rent.591.com.tw' + url;
+        if (!/^https:\/\//.test(url)) url = 'https://rent.591.com.tw/' + it.id;
         return {
           id: String(it.id),
           title: String(it.title || '').trim(),
           price: price,
           cover: cover,
-          url: it.url || ('https://rent.591.com.tw/' + it.id),
+          url: url,
           address: it.address || '',
           refreshTime: it.refresh_time || ''
         };
@@ -443,8 +449,18 @@ async function scrapeListings(filter) {
   const maxResults = filter.maxResults > 0 ? filter.maxResults : 10;
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-    const { items, statusCode } = await _fetchOnce(url);
-    const blocked = statusCode >= 400;
+    let items = [];
+    let statusCode = 0;
+    try {
+      ({ items, statusCode } = await _fetchOnce(url));
+    } catch (e) {
+      // 導航逾時、瀏覽器啟動失敗等例外也走重試，而不是讓整輪執行直接
+      // 掛掉（單人版掛掉會讓 workflow 標成失敗、state 也不會 commit）。
+      console.log(`⚠️ 第 ${attempt} 次抓取出錯: ${e.message}`);
+    }
+
+    // statusCode 0 代表連 response 都沒拿到，跟 4xx 一樣視為疑似被擋。
+    const blocked = statusCode >= 400 || statusCode === 0;
 
     // 搜尋網址已加上「依刊登時間新到舊排序」，DOM 上物件出現的順序就是
     // 新到舊，取前 N 筆即為「最新 N 筆」，不用每次處理整批搜尋結果。

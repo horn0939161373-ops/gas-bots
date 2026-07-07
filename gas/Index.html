@@ -102,7 +102,10 @@
       var region = regSel.value;
       var area = document.getElementById('districtArea');
       var list = DISTRICTS[region];
-      var pre = SUB ? String(SUB.district || '') : '';
+      // 只有目前選的縣市跟訂閱本來的縣市相同時才預填行政區：不然編輯時
+      // 一切換縣市，舊縣市的行政區代碼會漏進新縣市的「其他」欄，存出
+      // 跨縣市的錯誤搜尋條件。
+      var pre = (SUB && region === (SUB.region || '')) ? String(SUB.district || '') : '';
       var preParts = pre.split(/[,，、\s]+/).filter(Boolean);
       if (list) {
         var known = {};
@@ -148,6 +151,9 @@
         name: val('name'), region: regSel.value, district: collectDistrict(),
         priceMin: val('priceMin'), priceMax: val('priceMax'),
         roomType: document.getElementById('roomType').value, keyword: val('keyword'),
+        // 表單沒有 maxResults 欄位；編輯時把原值帶回去，不然直接在試算表
+        // 調過的自訂值會在每次編輯後被重設成預設的 10。
+        maxResults: (SUB && SUB.maxResults) || '',
         balcony: chk('balcony'), elevator: chk('elevator'), pet: chk('pet'),
         airConditioner: chk('airConditioner'), cooking: chk('cooking')
       };

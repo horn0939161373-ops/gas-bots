@@ -12,15 +12,15 @@ const MAX_MESSAGES_PER_PUSH = 5;
 // 抓不到合法圖片時的備用圖，確保每張卡片都有圖片可以顯示。
 const FALLBACK_IMAGE = 'https://placehold.co/600x400/0F766E/FFFFFF?text=591+%E7%A7%9F%E5%B1%8B';
 
-// LINE 的 image/uri 元件都要求合法的 https:// 網址；591 頁面上抓到的
-// <img> src 常常是相對路徑、data URI 或懶載入用的空白圖，直接塞進去
-// 會讓整則訊息被 LINE API 判定為 400 invalid（曾經因此整批推播失敗）。
-function isValidHttpUrl(url) {
-  return typeof url === 'string' && /^https?:\/\/\S+$/.test(url) && url.length <= 1000;
+// LINE 的 image 元件「只收 https://」（http 也會被判 400 invalid，整批
+// 推播跟著失敗）；591 頁面上抓到的 <img> src 常常是相對路徑、data URI
+// 或懶載入用的空白圖，所以這裡一律要求 https 才放行。
+function isValidHttpsUrl(url) {
+  return typeof url === 'string' && /^https:\/\/\S+$/.test(url) && url.length <= 1000;
 }
 
 function buildBubble(item) {
-  const coverUrl = isValidHttpUrl(item.cover) ? item.cover : FALLBACK_IMAGE;
+  const coverUrl = isValidHttpsUrl(item.cover) ? item.cover : FALLBACK_IMAGE;
   const bodyContents = [
     { type: 'image', url: coverUrl, size: 'full', aspectRatio: '20:13', aspectMode: 'cover' },
     {
@@ -39,7 +39,7 @@ function buildBubble(item) {
     }
   ];
 
-  const detailUri = isValidHttpUrl(item.url) ? item.url : 'https://rent.591.com.tw/';
+  const detailUri = isValidHttpsUrl(item.url) ? item.url : 'https://rent.591.com.tw/';
 
   return {
     type: 'bubble', size: 'mega',

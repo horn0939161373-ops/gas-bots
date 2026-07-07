@@ -50,9 +50,21 @@ jobs:
         run: node src/index-multi.js
 
       - name: Commit updated state
+        # push 失敗時先 rebase 遠端新 commit 再重試：單人版/多人版/手動觸發
+        # 可能交錯執行，若 push 被拒就讓 job 失敗，已推紀錄不會存檔，
+        # 下一輪會把同樣的物件再推一次（實際造成重複通知）。
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add notify-bot/state/subscribers-seen.json notify-bot/state/listings-data.json
-          git diff --cached --quiet || git commit -m "chore: 更新多人版已推紀錄 [skip ci]"
+          git diff --cached --quiet && exit 0
+          git commit -m "chore: 更新多人版已推紀錄 [skip ci]"
+          for i in 1 2 3; do
+            git push && exit 0
+            echo "push 失敗，rebase 遠端更新後重試（第 $i 次）"
+            # -X theirs：rebase 時衝突區塊保留「本輪剛寫入的 state」（rebase
+            # 語意下 theirs 指正在重放的本地 commit），避免 JSON 衝突卡死。
+            git pull --rebase -X theirs origin "${GITHUB_REF_NAME}"
+            sleep $((i * 2))
+          done
           git push
