@@ -1,0 +1,63 @@
+name: 自動部署 GAS
+
+# gas/ 底下的程式改動合併進 main 後，自動用 clasp 推上 Apps Script 專案並
+# 更新既有的 Web App 部署（exec 網址不變）。
+#
+# 需要的 Secrets（設定方式見 gas/README.md 的「自動部署」一節）：
+#   CLASPRC_JSON       本機 clasp login 後 ~/.clasprc.json 的完整內容
+#   GAS_SCRIPT_ID      GAS 專案設定裡的「指令碼 ID」
+#   GAS_DEPLOYMENT_ID  （選填）部署 → 管理部署作業裡 Web App 的部署 ID；
+#                      沒設就只更新程式碼（clasp push），不動部署版本
+#
+# ⚠️ 這會用 repo 的內容「覆蓋」GAS 專案裡的同名檔案，之後請一律改 repo、
+#    不要直接在 GAS 編輯器改，否則下次部署會被蓋掉。
+
+on:
+  push:
+    branches: [main]
+    paths: ['gas/**']
+  workflow_dispatch: {}
+
+concurrency:
+  group: deploy-gas
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install clasp
+        run: npm install -g @google/clasp
+
+      - name: Configure clasp credentials
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          GAS_SCRIPT_ID: ${{ secrets.GAS_SCRIPT_ID }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ] || [ -z "$GAS_SCRIPT_ID" ]; then
+            echo "::error::缺少 CLASPRC_JSON 或 GAS_SCRIPT_ID secret，請照 gas/README.md 的「自動部署」一節設定"
+            exit 1
+          fi
+          printf '%s' "$CLASPRC_JSON" > ~/.clasprc.json
+          printf '{"scriptId":"%s","rootDir":"gas","fileExtension":"gs"}' "$GAS_SCRIPT_ID" > .clasp.json
+
+      - name: Push code to Apps Script
+        run: clasp push -f
+
+      - name: Update Web App deployment
+        env:
+          GAS_DEPLOYMENT_ID: ${{ secrets.GAS_DEPLOYMENT_ID }}
+        run: |
+          if [ -z "$GAS_DEPLOYMENT_ID" ]; then
+            echo "未設定 GAS_DEPLOYMENT_ID，跳過部署版本更新（只有程式碼被推上去；Web App 的 exec 仍跑舊版本）"
+            exit 0
+          fi
+          clasp deploy --deploymentId "$GAS_DEPLOYMENT_ID" --description "auto-deploy ${GITHUB_SHA::7}"

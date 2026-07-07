@@ -224,6 +224,12 @@ async function extractListings(page) {
       const text = container.innerText.replace(/\s+/g, ' ').trim();
       if (!text) continue;
 
+      // 排除「社區推薦」卡片：搜尋條件無效（例如行政區代碼錯誤）時 591
+      // 會顯示社區彙總卡（「在租物件N間」「X,XXX 元/月起」），它不是單一
+      // 出租物件，價格是整個社區的起價，推播出去完全是誤導（實際發生過：
+      // 一張社區卡被當成物件推給使用者）。
+      if (/在租物件\s*\d+\s*間/.test(text) || /元\s*\/\s*月起/.test(text)) continue;
+
       // 價格：優先找 class 帶 price 的元素縮小範圍，且一定要求數字後面緊接
       // 「元」，避免抓到坪數、樓層、瀏覽次數等卡片上其他跟價格無關的數字
       // （這個問題造成過推播出來的租金是錯的）。

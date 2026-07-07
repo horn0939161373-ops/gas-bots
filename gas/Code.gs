@@ -82,6 +82,11 @@ function getSheet_() {
   if (head.join(',') !== HEADERS.join(',')) {
     sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS]);
   }
+  // district 欄一定要是「純文字」格式：不然「244,245,246,247」這種逗號
+  // 分隔的代碼會被試算表當成千分位數字轉成 244245246247，送給 591 就
+  // 查不到任何物件（實際發生過，通知因此完全中斷）。
+  var dCol = HEADERS.indexOf('district') + 1;
+  sh.getRange(1, dCol, sh.getMaxRows(), 1).setNumberFormat('@');
   return sh;
 }
 
