@@ -70,12 +70,13 @@
   <script>
     var UID = '<?= uid ?>';
     var SUBID = '<?= subId ?>';
+    var BASE = '<?= baseUrl ?>'; // 頁面跳轉一定要用完整 exec 網址（相對連結會導到沙盒網域）
     var DISTRICTS = JSON.parse('<?= districtsJson ?>');
     var SUB = JSON.parse('<?= subJson ?>');
-    var REGIONS = ['台北市','新北市','基隆市','桃園市','新竹市','新竹縣','苗栗縣','台中市','彰化縣','南投縣','雲林縣','嘉義市','嘉義縣','台南市','高雄市','屏東縣','宜蘭縣','花蓮縣','台東縣','澎湖縣','金門縣'];
+    var REGIONS = ['台北市','新北市','基隆市','桃園市','新竹市','新竹縣','苗栗縣','台中市','彰化縣','南投縣','雲林縣','嘉義市','嘉義縣','台南市','高雄市','屏東縣','宜蘭縣','花蓮縣','台東縣','澎湖縣','金門縣','連江縣'];
 
     if (!UID) document.getElementById('nouid').style.display = 'block';
-    document.getElementById('manageLink').href = '?action=manage&uid=' + encodeURIComponent(UID);
+    document.getElementById('manageLink').href = BASE + '?action=manage&uid=' + encodeURIComponent(UID);
     if (SUBID) { document.getElementById('title').textContent = '✏️ 編輯租屋通知條件'; }
 
     // 縣市下拉
@@ -106,6 +107,15 @@
       // 一切換縣市，舊縣市的行政區代碼會漏進新縣市的「其他」欄，存出
       // 跨縣市的錯誤搜尋條件。
       var pre = (SUB && region === (SUB.region || '')) ? String(SUB.district || '') : '';
+      // 相容舊髒資料：試算表曾把「244,245,246,247」轉成數字 244245246247，
+      // 依千分位規則每 3 位切回，預填勾選才對得起來。
+      if (/^\d{4,}$/.test(pre)) {
+        var chunks = [];
+        var ps = pre;
+        while (ps.length > 3) { chunks.unshift(ps.slice(-3)); ps = ps.slice(0, -3); }
+        chunks.unshift(ps);
+        pre = chunks.join(',');
+      }
       var preParts = pre.split(/[,，、\s]+/).filter(Boolean);
       if (list) {
         var known = {};
