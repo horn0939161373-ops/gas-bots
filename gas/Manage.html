@@ -29,8 +29,34 @@
 
   <script>
     var UID = '<?= uid ?>';
+    var BASE = '<?= baseUrl ?>'; // 頁面跳轉一定要用完整 exec 網址（相對連結會導到沙盒網域）
+    var DISTRICTS = JSON.parse('<?= districtsJson ?>');
     var FAC = { balcony:'陽台', elevator:'電梯', pet:'寵物', airConditioner:'冷氣', cooking:'開伙' };
-    document.getElementById('addLink').href = '?uid=' + encodeURIComponent(UID);
+
+    // 代碼 → 行政區名稱 的對照表（591 的 section 代碼全國不重複，摊平即可）
+    var CODE_TO_NAME = {};
+    Object.keys(DISTRICTS).forEach(function (region) {
+      DISTRICTS[region].forEach(function (d) { CODE_TO_NAME[String(d[1])] = d[0]; });
+    });
+
+    // 把存的行政區欄位轉成人看得懂的名稱。相容兩種歷史髒資料：
+    // 1) 試算表把「244,245,246,247」轉成數字 244245246247 → 每 3 位切回
+    // 2) 查不到名稱的代碼原樣顯示
+    function districtLabel(raw) {
+      var s = String(raw == null ? '' : raw).trim();
+      if (!s) return '（整個縣市）';
+      if (/^\d{4,}$/.test(s)) {
+        var parts = [];
+        while (s.length > 3) { parts.unshift(s.slice(-3)); s = s.slice(0, -3); }
+        parts.unshift(s);
+        s = parts.join(',');
+      }
+      return s.split(/[,，、\s]+/).filter(Boolean).map(function (p) {
+        return CODE_TO_NAME[p] || p;
+      }).join('、');
+    }
+
+    document.getElementById('addLink').href = BASE + '?uid=' + encodeURIComponent(UID);
     if (!UID) { document.getElementById('nouid').style.display = 'block'; document.getElementById('list').innerHTML = ''; }
     else load();
 
@@ -51,11 +77,11 @@
         div.className = 'item';
         div.innerHTML =
           '<div class="name">' + esc(s.name || '(未命名)') + (s.enabled ? '' : '<span class="paused">已暫停</span>') + '</div>' +
-          '<div class="meta">' + esc(s.region || '') + ' ' + esc(s.district || '') + '<br>' +
+          '<div class="meta">' + esc(s.region || '') + ' ' + esc(districtLabel(s.district)) + '<br>' +
           price + '｜' + esc(s.roomType || '不限') + (s.keyword ? '｜關鍵字：' + esc(s.keyword) : '') +
           (facs.length ? '<br>設備：' + facs.join('、') : '') + '</div>' +
           '<div class="acts">' +
-          '<a href="?uid=' + enc(UID) + '&subId=' + enc(s.subId) + '">編輯</a>' +
+          '<a href="' + BASE + '?uid=' + enc(UID) + '&subId=' + enc(s.subId) + '">編輯</a>' +
           '<button onclick="toggle(\'' + s.subId + '\',' + (s.enabled ? 'false' : 'true') + ')">' + (s.enabled ? '暫停' : '恢復') + '</button>' +
           '<button class="del" onclick="del(\'' + s.subId + '\')">刪除</button>' +
           '</div>';
