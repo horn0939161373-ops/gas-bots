@@ -149,7 +149,7 @@
     "price": 12000,
     "cover": "https://img1.591.com.tw/house/2026/06/23/178218261563314003.jpg!400x300.jpg",
     "url": "https://rent.591.com.tw/21503822",
-    "scrapedAt": "2026-07-22T07:56:09.265Z"
+    "scrapedAt": "2026-07-22T08:56:07.895Z"
   },
   "21507027": {
     "id": "21507027",
@@ -1571,25 +1571,25 @@
     "id": "21680581",
     "title": "超優質套房,門口監控安全性高",
     "price": 6500,
-    "cover": "https://img2.591.com.tw/house/2012/04/19/133482632272238400.jpg!400x300.jpg",
+    "cover": "https://img1.591.com.tw/house/2012/04/19/133482632272238400.jpg!400x300.jpg",
     "url": "https://rent.591.com.tw/21680581",
-    "scrapedAt": "2026-07-22T07:56:09.265Z"
+    "scrapedAt": "2026-07-22T08:56:07.895Z"
   },
   "21682913": {
     "id": "21682913",
     "title": "免仲介費可租補-五泰小麟-鹽埕電梯溫馨2房",
     "price": 12000,
-    "cover": "https://img1.591.com.tw/house/2026/07/22/178469062747584109.jpg!400x300.jpg",
+    "cover": "https://img2.591.com.tw/house/2026/07/22/178469062747584109.jpg!400x300.jpg",
     "url": "https://rent.591.com.tw/21682913",
-    "scrapedAt": "2026-07-22T07:56:09.265Z"
+    "scrapedAt": "2026-07-22T08:56:07.895Z"
   },
   "21683406": {
     "id": "21683406",
     "title": "大採光整層出租近漢神新崛江捷運中央公園自強夜市",
     "price": 14500,
-    "cover": "https://img2.591.com.tw/house/2025/04/15/174468610972786705.jpg!400x300.jpg",
+    "cover": "https://img1.591.com.tw/house/2025/04/15/174468610972786705.jpg!400x300.jpg",
     "url": "https://rent.591.com.tw/21683406",
-    "scrapedAt": "2026-07-22T07:56:09.265Z"
+    "scrapedAt": "2026-07-22T08:56:07.895Z"
   },
   "21683597": {
     "id": "21683597",
@@ -1605,7 +1605,7 @@
     "price": 9000,
     "cover": "https://img1.591.com.tw/house/2026/07/22/178470115029689203.jpg!400x300.jpg",
     "url": "https://rent.591.com.tw/21684295",
-    "scrapedAt": "2026-07-22T07:56:09.265Z"
+    "scrapedAt": "2026-07-22T08:56:07.895Z"
   },
   "21684481": {
     "id": "21684481",
@@ -1613,15 +1613,15 @@
     "price": 7500,
     "cover": "https://img1.591.com.tw/house/2023/07/15/168942094290259438.jpg!400x300.jpg",
     "url": "https://rent.591.com.tw/21684481",
-    "scrapedAt": "2026-07-22T07:56:09.265Z"
+    "scrapedAt": "2026-07-22T08:56:07.895Z"
   },
   "21684533": {
     "id": "21684533",
     "title": "#前金#愛河#漢神#雄女#光502雙人時尚簡歐設計",
     "price": 8000,
-    "cover": "https://img1.591.com.tw/house/2026/07/22/178470280203444203.jpg!400x300.jpg",
+    "cover": "https://img2.591.com.tw/house/2026/07/22/178470280203444203.jpg!400x300.jpg",
     "url": "https://rent.591.com.tw/21684533",
-    "scrapedAt": "2026-07-22T07:56:09.265Z"
+    "scrapedAt": "2026-07-22T08:56:07.895Z"
   },
   "21684617": {
     "id": "21684617",
@@ -1629,14 +1629,22 @@
     "price": 12000,
     "cover": "https://images.591.com.tw/index/house/newVersion/noImgBigNew.png",
     "url": "https://rent.591.com.tw/21684617",
-    "scrapedAt": "2026-07-22T07:56:09.265Z"
+    "scrapedAt": "2026-07-22T08:56:07.895Z"
   },
   "21684918": {
     "id": "21684918",
     "title": "美麗島捷運旁舒適套房~有獨立陽台",
     "price": 12000,
-    "cover": "https://img1.591.com.tw/house/2026/07/22/178470597815960805.jpg!400x300.jpg",
+    "cover": "https://img2.591.com.tw/house/2026/07/22/178470597815960805.jpg!400x300.jpg",
     "url": "https://rent.591.com.tw/21684918",
-    "scrapedAt": "2026-07-22T07:56:09.265Z"
+    "scrapedAt": "2026-07-22T08:56:07.895Z"
+  },
+  "21685499": {
+    "id": "21685499",
+    "title": "六合夜市捷運站旁獨棟電梯套房",
+    "price": 7800,
+    "cover": "https://img1.591.com.tw/house/2022/06/16/165534582543233508.jpg!400x300.jpg",
+    "url": "https://rent.591.com.tw/21685499",
+    "scrapedAt": "2026-07-22T08:56:07.895Z"
   }
 }
